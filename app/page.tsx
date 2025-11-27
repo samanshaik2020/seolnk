@@ -1,33 +1,74 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, Copy, Check } from 'lucide-react'
+import { Loader2, Copy, Check, Sparkles, ArrowRight, Upload, BarChart3 } from 'lucide-react'
+import { Hero } from '@/components/Hero'
+import { LinkPreview } from '@/components/LinkPreview'
+import { Features } from '@/components/Features'
+import { supabase } from '@/lib/supabase'
 
 export default function Home() {
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [generatedUrl, setGeneratedUrl] = useState('')
   const [copied, setCopied] = useState(false)
+
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    imageUrl: '',
+    originalUrl: ''
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return
+    }
+    setUploading(true)
+    const file = e.target.files[0]
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `${fileName}`
+
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file)
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      const { data } = supabase.storage.from('images').getPublicUrl(filePath)
+
+      setFormData(prev => ({ ...prev, imageUrl: data.publicUrl }))
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('Error uploading image')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      title: formData.get('title'),
-      description: formData.get('description'),
-      imageUrl: formData.get('imageUrl'),
-      originalUrl: formData.get('originalUrl'),
-    }
 
     try {
       const res = await fetch('/api/create', {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify(formData),
         headers: { 'Content-Type': 'application/json' },
       })
       const json = await res.json()
@@ -48,54 +89,185 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Create Link Preview</CardTitle>
-          <CardDescription>Customize how your link looks on social media.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {!generatedUrl ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input id="title" name="title" placeholder="Enter title" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="originalUrl">Original URL (Redirect Target)</Label>
-                <Input id="originalUrl" name="originalUrl" placeholder="https://your-original-link.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" placeholder="Enter description" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="imageUrl">Image URL</Label>
-                <Input id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg" required />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Generate Link
-              </Button>
-            </form>
-          ) : (
-            <div className="space-y-4">
-              <div className="p-4 bg-green-50 text-green-700 rounded-md">
-                Link created successfully!
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input value={generatedUrl} readOnly />
-                <Button size="icon" variant="outline" onClick={copyToClipboard}>
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
-              <Button variant="ghost" className="w-full" onClick={() => setGeneratedUrl('')}>
-                Create Another
-              </Button>
+    <div className="min-h-screen bg-background">
+      <Hero />
+
+      <div className="container mx-auto px-4 pb-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+          {/* Left Column: Form */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="border-border/50 shadow-xl bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Create Your Link
+                </CardTitle>
+                <CardDescription>
+                  Enter the details for your social media preview card.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!generatedUrl ? (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Title</Label>
+                      <Input
+                        id="title"
+                        name="title"
+                        placeholder="e.g., My Awesome Article"
+                        required
+                        value={formData.title}
+                        onChange={handleInputChange}
+                        className="bg-background/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="originalUrl">Target URL</Label>
+                      <Input
+                        id="originalUrl"
+                        name="originalUrl"
+                        placeholder="https://your-site.com/page"
+                        required
+                        value={formData.originalUrl}
+                        onChange={handleInputChange}
+                        className="bg-background/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        name="description"
+                        placeholder="A brief summary that appears below the title..."
+                        required
+                        value={formData.description}
+                        onChange={handleInputChange}
+                        className="bg-background/50 min-h-[100px]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="imageUrl">Image URL</Label>
+                      <Input
+                        id="imageUrl"
+                        name="imageUrl"
+                        placeholder="https://example.com/image.jpg"
+                        required
+                        value={formData.imageUrl}
+                        onChange={handleInputChange}
+                        className="bg-background/50"
+                      />
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="relative">
+                          <input
+                            type="file"
+                            id="imageUpload"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploading}
+                          />
+                          <Label
+                            htmlFor="imageUpload"
+                            className="cursor-pointer inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {uploading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Upload className="h-4 w-4" />
+                            )}
+                            {uploading ? 'Uploading...' : 'Upload Image'}
+                          </Label>
+                        </div>
+                        <span className="text-xs text-muted-foreground">or paste URL above</span>
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
+                      {loading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <span className="flex items-center">
+                          Generate Preview Link <ArrowRight className="ml-2 h-4 w-4" />
+                        </span>
+                      )}
+                    </Button>
+                  </form>
+                ) : (
+                  <div className="space-y-6 py-4">
+                    <div className="p-4 bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg border border-green-500/20 flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <Check className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">Link Created Successfully!</p>
+                        <p className="text-sm opacity-90">Your custom preview is ready to share.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Your Short Link</Label>
+                      <div className="flex items-center gap-2">
+                        <Input value={generatedUrl} readOnly className="font-mono text-sm bg-muted/50" />
+                        <Button size="icon" onClick={copyToClipboard} className="shrink-0">
+                          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href={`/analytics/${generatedUrl.split('/').pop()}`} target="_blank" rel="noopener noreferrer">
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        View Analytics
+                      </a>
+                    </Button>
+
+                    <Button variant="outline" className="w-full" onClick={() => {
+                      setGeneratedUrl('')
+                      setFormData({ title: '', description: '', imageUrl: '', originalUrl: '' })
+                    }}>
+                      Create Another Link
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Right Column: Live Preview */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4 }}
+            className="lg:sticky lg:top-24 space-y-6"
+          >
+            <div className="text-center lg:text-left">
+              <h3 className="text-2xl font-semibold mb-2">Live Preview</h3>
+              <p className="text-muted-foreground mb-6">
+                See how your link will look on Twitter, Facebook, and LinkedIn.
+              </p>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+
+            <LinkPreview
+              title={formData.title}
+              description={formData.description}
+              imageUrl={formData.imageUrl}
+              domain={formData.originalUrl ? new URL(formData.originalUrl).hostname : ''}
+            />
+
+            <div className="bg-muted/30 rounded-lg p-6 border border-border/50 text-sm text-muted-foreground">
+              <h4 className="font-semibold text-foreground mb-2">Pro Tip</h4>
+              <p>
+                Images with a 1.91:1 aspect ratio (e.g., 1200x630px) work best for social media previews.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      <Features />
+    </div >
   )
 }

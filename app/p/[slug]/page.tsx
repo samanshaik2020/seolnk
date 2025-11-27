@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import Image from 'next/image'
 import RedirectComponent from '@/components/RedirectComponent'
+import { headers } from 'next/headers'
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -59,6 +60,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CardPage({ params }: Props) {
     const { slug } = await params
     const card = await getCard(slug)
+
+    if (card) {
+        // Track view
+        const headersList = await headers()
+        const userAgent = headersList.get('user-agent') || 'unknown'
+        const referrer = headersList.get('referer') || 'unknown'
+
+        await supabase.from('analytics').insert({
+            card_id: card.id,
+            user_agent: userAgent,
+            referrer: referrer,
+        })
+    }
 
     if (!card) {
         return (
