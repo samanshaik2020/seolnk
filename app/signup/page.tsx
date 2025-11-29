@@ -16,6 +16,7 @@ function SignupContent() {
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
     const next = searchParams.get('next')
@@ -33,8 +34,7 @@ function SignupContent() {
 
             if (error) throw error
 
-            router.push(next || '/dashboard')
-            router.refresh()
+            setSuccess(true)
         } catch (err: unknown) {
             if (err instanceof Error) {
                 setError(err.message)
@@ -124,56 +124,68 @@ function SignupContent() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSignup} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    required
-                                    className="bg-background"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    minLength={6}
-                                    className="bg-background"
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                    Must be at least 6 characters long.
-                                </p>
-                            </div>
-
-                            {error && (
-                                <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md flex items-center gap-2">
-                                    <span className="font-semibold">Error:</span> {error}
+                        {success ? (
+                            <div className="text-center space-y-4">
+                                <div className="bg-green-500/10 text-green-600 dark:text-green-400 p-4 rounded-lg border border-green-500/20">
+                                    <h3 className="font-semibold text-lg mb-2">Account Created!</h3>
+                                    <p>Please check your email to confirm your account before logging in.</p>
                                 </div>
-                            )}
-
-                            <Button type="submit" className="w-full" disabled={loading}>
-                                {loading ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : (
-                                    'Create Account'
-                                )}
-                            </Button>
-
-                            <div className="text-center text-sm text-muted-foreground mt-4">
-                                Already have an account?{' '}
-                                <Link href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'} className="text-primary hover:underline font-medium">
-                                    Login
-                                </Link>
+                                <Button asChild className="w-full">
+                                    <Link href="/login">Go to Login</Link>
+                                </Button>
                             </div>
-                        </form>
+                        ) : (
+                            <form onSubmit={handleSignup} className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="name@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        className="bg-background"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        minLength={6}
+                                        className="bg-background"
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        Must be at least 6 characters long.
+                                    </p>
+                                </div>
+
+                                {error && (
+                                    <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md flex items-center gap-2">
+                                        <span className="font-semibold">Error:</span> {error}
+                                    </div>
+                                )}
+
+                                <Button type="submit" className="w-full" disabled={loading}>
+                                    {loading ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        'Create Account'
+                                    )}
+                                </Button>
+
+                                <div className="text-center text-sm text-muted-foreground mt-4">
+                                    Already have an account?{' '}
+                                    <Link href={next ? `/login?next=${encodeURIComponent(next)}` : '/login'} className="text-primary hover:underline font-medium">
+                                        Login
+                                    </Link>
+                                </div>
+                            </form>
+                        )}
                     </CardContent>
                 </Card>
             </div>

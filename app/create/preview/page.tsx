@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, Copy, Check, Sparkles, ArrowRight, Upload, BarChart3, ArrowLeft } from 'lucide-react'
+import { Loader2, Copy, Check, Sparkles, ArrowRight, Upload, BarChart3, ArrowLeft, AlertTriangle } from 'lucide-react'
 import { LinkPreview } from '@/components/LinkPreview'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -90,6 +90,16 @@ function PreviewContent() {
         e.preventDefault()
         setLoading(true)
 
+        // Basic URL validation
+        try {
+            new URL(formData.originalUrl)
+            if (formData.imageUrl) new URL(formData.imageUrl)
+        } catch {
+            alert('Please enter valid URLs')
+            setLoading(false)
+            return
+        }
+
         try {
             const { data: { user } } = await supabase.auth.getUser()
 
@@ -160,6 +170,14 @@ function PreviewContent() {
                             <CardContent>
                                 {!generatedUrl ? (
                                     <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 flex items-start gap-3 text-sm text-yellow-600 dark:text-yellow-400">
+                                            <AlertTriangle className="h-5 w-5 shrink-0" />
+                                            <div>
+                                                <p className="font-semibold mb-1">Important Precaution</p>
+                                                <p>Ensure your Target URL and Image URL are publicly accessible. Test your links before sharing to guarantee they appear correctly on social media.</p>
+                                            </div>
+                                        </div>
+
                                         <div className="space-y-2">
                                             <Label htmlFor="title">Title</Label>
                                             <Input

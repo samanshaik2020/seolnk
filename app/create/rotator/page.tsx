@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Loader2, Copy, Check, Repeat, Plus, Trash2, Sparkles, BarChart3, ArrowLeft } from 'lucide-react'
+import { Loader2, Copy, Check, Repeat, Plus, Trash2, Sparkles, BarChart3, ArrowLeft, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -69,6 +69,15 @@ function RotatorContent() {
         const validUrls = rotatorData.urls.filter(u => u.trim() !== '')
         if (validUrls.length === 0) {
             alert('Please enter at least one URL')
+            setLoading(false)
+            return
+        }
+
+        // Validate URLs
+        try {
+            validUrls.forEach(url => new URL(url))
+        } catch {
+            alert('Please enter valid URLs')
             setLoading(false)
             return
         }
@@ -144,6 +153,14 @@ function RotatorContent() {
                             <CardContent>
                                 {!generatedUrl ? (
                                     <form onSubmit={handleRotatorSubmit} className="space-y-6">
+                                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 flex items-start gap-3 text-sm text-yellow-600 dark:text-yellow-400">
+                                            <AlertTriangle className="h-5 w-5 shrink-0" />
+                                            <div>
+                                                <p className="font-semibold mb-1">Important Precaution</p>
+                                                <p>Test all destination URLs to ensure they are active. The rotator will randomly redirect users to these links, so broken links will affect user experience.</p>
+                                            </div>
+                                        </div>
+
                                         <div className="space-y-2">
                                             <Label htmlFor="rotatorTitle">Rotator Title (Optional)</Label>
                                             <Input
