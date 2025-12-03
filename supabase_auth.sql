@@ -7,6 +7,8 @@ alter table rotators
 add column user_id uuid references auth.users(id);
 
 -- Update RLS for cards
+alter table cards enable row level security;
+
 -- Allow public read access (already exists, but ensuring)
 create policy "Public can view cards"
   on cards for select
