@@ -56,13 +56,13 @@ function LoginContent() {
                         <div className="relative h-8 w-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
                             <LinkIcon className="h-5 w-5" />
                         </div>
-                        <span className="font-bold text-xl font-serif">Link Render</span>
+                        <span className="font-bold text-xl font-serif">SEOLnk</span>
                     </Link>
 
                     <div className="space-y-8 max-w-md">
                         <h1 className="text-4xl font-extrabold tracking-tight">
                             Welcome back to <br />
-                            <span className="text-primary">Link Render</span>
+                            <span className="text-primary">SEOLnk</span>
                         </h1>
                         <p className="text-xl text-muted-foreground">
                             Continue managing your links and optimizing your social media presence.
@@ -107,7 +107,7 @@ function LoginContent() {
                             <div className="relative h-8 w-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
                                 <LinkIcon className="h-5 w-5" />
                             </div>
-                            <span className="font-bold text-xl font-serif">Link Render</span>
+                            <span className="font-bold text-xl font-serif">SEOLnk</span>
                         </div>
                         <CardTitle className="text-2xl font-bold flex items-center gap-2">
                             <LogIn className="h-5 w-5 text-primary" />

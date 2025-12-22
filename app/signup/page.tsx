@@ -56,7 +56,7 @@ function SignupContent() {
                         <div className="relative h-8 w-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
                             <LinkIcon className="h-5 w-5" />
                         </div>
-                        <span className="font-bold text-xl font-serif">Link Render</span>
+                        <span className="font-bold text-xl font-serif">SEOLnk</span>
                     </Link>
 
                     <div className="space-y-8 max-w-md">
@@ -101,7 +101,7 @@ function SignupContent() {
                 </div>
 
                 <div className="relative z-10 text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} Link Render. All rights reserved.
+                    &copy; {new Date().getFullYear()} SEOLnk. All rights reserved.
                 </div>
             </div>
 
@@ -113,7 +113,7 @@ function SignupContent() {
                             <div className="relative h-8 w-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
                                 <LinkIcon className="h-5 w-5" />
                             </div>
-                            <span className="font-bold text-xl font-serif">Link Render</span>
+                            <span className="font-bold text-xl font-serif">SEOLnk</span>
                         </div>
                         <CardTitle className="text-2xl font-bold flex items-center gap-2">
                             <UserPlus className="h-5 w-5 text-primary" />

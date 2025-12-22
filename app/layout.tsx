@@ -17,8 +17,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
-  title: "Link Preview Generator",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://seolnk.com'),
+  title: "SEOLnk - Custom Link Preview Generator",
   description: "Create custom social media preview cards for your links.",
 };
 

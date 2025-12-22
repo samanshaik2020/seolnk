@@ -7,9 +7,9 @@ export function Navbar() {
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 <Link href="/" className="flex items-center space-x-2">
                     <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">L</span>
+                        <span className="text-white font-bold text-lg">S</span>
                     </div>
-                    <span className="font-bold text-xl tracking-tight">LinkRender</span>
+                    <span className="font-bold text-xl tracking-tight">SEOLnk</span>
                 </Link>
 
                 <nav className="flex items-center gap-4">

@@ -15,19 +15,40 @@ export default function AuthButton() {
 
     useEffect(() => {
         const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUser(user)
-            setLoading(false)
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser()
+                if (error) {
+                    // If there's an error fetching user (like invalid token), sign out to clear stale data
+                    if (error.message.includes('refresh_token_not_found') || error.message.includes('Invalid Refresh Token')) {
+                        await supabase.auth.signOut()
+                        setUser(null)
+                    } else if (error.message.includes('Auth session missing!')) {
+                        // This is expected logic when the user is not logged in, no need to log as error
+                        setUser(null)
+                    } else {
+                        console.error('Error fetching user:', error.message)
+                    }
+                } else {
+                    setUser(user)
+                }
+            } catch (err) {
+                console.error('Unexpected error in getUser:', err)
+            } finally {
+                setLoading(false)
+            }
         }
 
         getUser()
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             setUser(session?.user ?? null)
+            if (event === 'SIGNED_OUT') {
+                router.refresh()
+            }
         })
 
         return () => subscription.unsubscribe()
-    }, [])
+    }, [router])
 
     const handleLogout = async () => {
         await supabase.auth.signOut()

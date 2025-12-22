@@ -83,13 +83,18 @@ function DashboardContent() {
 
     useEffect(() => {
         const checkUser = async () => {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) {
-                router.push('/login')
-                return
-            }
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser()
+                if (error || !user) {
+                    router.push('/login')
+                    return
+                }
 
-            fetchData(session.user.id)
+                fetchData(user.id)
+            } catch (err) {
+                console.error('Auth check failed:', err)
+                router.push('/login')
+            }
         }
         checkUser()
     }, [router])
@@ -135,7 +140,7 @@ function DashboardContent() {
                         <div className="relative h-8 w-8 flex items-center justify-center bg-primary/10 rounded-lg text-primary">
                             <LinkIcon className="h-5 w-5" />
                         </div>
-                        <span className="font-bold text-xl tracking-tight font-serif">Link Render</span>
+                        <span className="font-bold text-xl tracking-tight font-serif">SEOLnk</span>
                     </Link>
                     <AuthButton />
                 </div>

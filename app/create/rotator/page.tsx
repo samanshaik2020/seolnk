@@ -83,7 +83,12 @@ function RotatorContent() {
         }
 
         try {
-            const { data: { user } } = await supabase.auth.getUser()
+            const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+            if (authError || !user) {
+                router.push('/login')
+                return
+            }
 
             const res = await fetch('/api/rotator/create', {
                 method: editId ? 'PUT' : 'POST',
@@ -91,7 +96,7 @@ function RotatorContent() {
                     id: editId,
                     title: rotatorData.title,
                     urls: validUrls,
-                    user_id: user?.id
+                    user_id: user.id
                 }),
                 headers: { 'Content-Type': 'application/json' },
             })
@@ -124,7 +129,7 @@ function RotatorContent() {
                 <div className="flex items-center justify-between mb-8">
                     <Link href="/" className="text-xl font-bold flex items-center gap-2">
                         <Sparkles className="h-6 w-6 text-primary" />
-                        Link Render
+                        SEOLnk
                     </Link>
                     <Button variant="ghost" asChild>
                         <Link href="/dashboard">
