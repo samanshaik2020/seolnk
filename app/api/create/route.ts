@@ -6,7 +6,7 @@ import probe from 'probe-image-size'
 
 export async function POST(request: Request) {
     try {
-        const { title, description, imageUrl, originalUrl, user_id } = await request.json()
+        const { title, description, imageUrl, originalUrl, user_id, campaign_id } = await request.json()
 
         // Validate image and get dimensions
         let dimensions
@@ -35,6 +35,7 @@ export async function POST(request: Request) {
                     image_height: dimensions.height,
                     original_url: originalUrl,
                     user_id: user_id || null,
+                    campaign_id: campaign_id || null,
                 },
             ])
             .select()
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { id, title, description, imageUrl, originalUrl, user_id } = await request.json()
+        const { id, title, description, imageUrl, originalUrl, user_id, campaign_id } = await request.json()
 
         if (!id) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 })
@@ -82,6 +83,7 @@ export async function PUT(request: Request) {
                 image_width: dimensions.width,
                 image_height: dimensions.height,
                 original_url: originalUrl,
+                campaign_id: campaign_id || null,
             })
             .eq('id', id)
             .eq('user_id', user_id) // Ensure ownership

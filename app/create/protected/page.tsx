@@ -6,26 +6,27 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Loader2, Copy, Check, Repeat, Plus, Trash2, Sparkles, BarChart3, ArrowLeft, AlertTriangle } from 'lucide-react'
+import { Loader2, Copy, Check, Lock, Sparkles, ArrowLeft, AlertTriangle, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CampaignSelector } from '@/components/CampaignSelector'
 
-function RotatorContent() {
+function ProtectedContent() {
     const [loading, setLoading] = useState(false)
     const [generatedUrl, setGeneratedUrl] = useState('')
     const [copied, setCopied] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
     const searchParams = useSearchParams()
     const editId = searchParams.get('edit')
     const [userId, setUserId] = useState<string | null>(null)
     const [campaignId, setCampaignId] = useState<string | null>(null)
 
-    // Rotator State
-    const [rotatorData, setRotatorData] = useState({
+    const [formData, setFormData] = useState({
         title: '',
-        urls: ['', '']
+        originalUrl: '',
+        password: ''
     })
 
     useEffect(() => {
@@ -36,58 +37,47 @@ function RotatorContent() {
         checkUser()
 
         if (editId) {
-            const fetchRotator = async () => {
-                const { data: rotator } = await supabase
-                    .from('rotators')
-                    .select('*, rotator_urls(url)')
+            const fetchLink = async () => {
+                const { data } = await supabase
+                    .from('password_protected_links')
+                    .select('*')
                     .eq('id', editId)
                     .single()
 
-                if (rotator) {
-                    setRotatorData({
-                        title: rotator.title,
-                        urls: rotator.rotator_urls.map((u: { url: string }) => u.url)
+                if (data) {
+                    setFormData({
+                        title: data.title || '',
+                        originalUrl: data.original_url,
+                        password: '' // Don't show existing password
                     })
-                    if (rotator.campaign_id) setCampaignId(rotator.campaign_id)
+                    if (data.campaign_id) setCampaignId(data.campaign_id)
                 }
             }
-            fetchRotator()
+            fetchLink()
         }
     }, [editId])
 
-    const handleRotatorChange = (index: number, value: string) => {
-        const newUrls = [...rotatorData.urls]
-        newUrls[index] = value
-        setRotatorData(prev => ({ ...prev, urls: newUrls }))
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const addRotatorUrl = () => {
-        setRotatorData(prev => ({ ...prev, urls: [...prev.urls, ''] }))
-    }
-
-    const removeRotatorUrl = (index: number) => {
-        if (rotatorData.urls.length <= 2) return
-        const newUrls = rotatorData.urls.filter((_, i) => i !== index)
-        setRotatorData(prev => ({ ...prev, urls: newUrls }))
-    }
-
-    const handleRotatorSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
 
-        // Filter out empty URLs
-        const validUrls = rotatorData.urls.filter(u => u.trim() !== '')
-        if (validUrls.length === 0) {
-            alert('Please enter at least one URL')
+        // Validate URL
+        try {
+            new URL(formData.originalUrl)
+        } catch {
+            alert('Please enter a valid URL')
             setLoading(false)
             return
         }
 
-        // Validate URLs
-        try {
-            validUrls.forEach(url => new URL(url))
-        } catch {
-            alert('Please enter valid URLs')
+        // Validate password for new links
+        if (!editId && formData.password.length < 4) {
+            alert('Password must be at least 4 characters')
             setLoading(false)
             return
         }
@@ -100,12 +90,13 @@ function RotatorContent() {
                 return
             }
 
-            const res = await fetch('/api/rotator/create', {
+            const res = await fetch('/api/protected', {
                 method: editId ? 'PUT' : 'POST',
                 body: JSON.stringify({
                     id: editId,
-                    title: rotatorData.title,
-                    urls: validUrls,
+                    title: formData.title,
+                    original_url: formData.originalUrl,
+                    password: formData.password || undefined,
                     user_id: user.id,
                     campaign_id: campaignId
                 }),
@@ -113,7 +104,9 @@ function RotatorContent() {
             })
             const json = await res.json()
             if (json.slug) {
-                setGeneratedUrl(`${window.location.origin}/r/${json.slug}`)
+                setGeneratedUrl(`${window.location.origin}/s/${json.slug}`)
+            } else if (json.error) {
+                alert(json.error)
             }
         } catch (err) {
             console.error(err)
@@ -130,8 +123,8 @@ function RotatorContent() {
 
     const resetForm = () => {
         setGeneratedUrl('')
-        setRotatorData({ title: '', urls: ['', ''] })
-        router.push('/create/rotator')
+        setFormData({ title: '', originalUrl: '', password: '' })
+        router.push('/create/protected')
     }
 
     return (
@@ -143,7 +136,7 @@ function RotatorContent() {
                         SEOLnk
                     </Link>
                     <Button variant="ghost" asChild>
-                        <Link href="/dashboard">
+                        <Link href="/dashboard?tab=protected">
                             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
                         </Link>
                     </Button>
@@ -159,68 +152,76 @@ function RotatorContent() {
                         <Card className="border-border/50 shadow-xl bg-card/50 backdrop-blur-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Repeat className="h-5 w-5 text-primary" />
-                                    {editId ? 'Edit Rotator Link' : 'Create Rotator Link'}
+                                    <Lock className="h-5 w-5 text-primary" />
+                                    {editId ? 'Edit Protected Link' : 'Create Protected Link'}
                                 </CardTitle>
                                 <CardDescription>
-                                    {editId ? 'Update your rotator settings.' : 'Create a link that rotates between multiple destinations.'}
+                                    {editId ? 'Update your password protected link.' : 'Create a link that requires a password to access.'}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 {!generatedUrl ? (
-                                    <form onSubmit={handleRotatorSubmit} className="space-y-6">
-                                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 flex items-start gap-3 text-sm text-yellow-600 dark:text-yellow-400">
-                                            <AlertTriangle className="h-5 w-5 shrink-0" />
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex items-start gap-3 text-sm text-blue-600 dark:text-blue-400">
+                                            <Lock className="h-5 w-5 shrink-0" />
                                             <div>
-                                                <p className="font-semibold mb-1">Important Precaution</p>
-                                                <p>Test all destination URLs to ensure they are active. The rotator will randomly redirect users to these links, so broken links will affect user experience.</p>
+                                                <p className="font-semibold mb-1">Password Protected</p>
+                                                <p>Visitors must enter the correct password to access the destination URL.</p>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="rotatorTitle">Rotator Title (Optional)</Label>
+                                            <Label htmlFor="title">Link Title (Optional)</Label>
                                             <Input
-                                                id="rotatorTitle"
-                                                placeholder="e.g., My A/B Test"
-                                                value={rotatorData.title}
-                                                onChange={(e) => setRotatorData(prev => ({ ...prev, title: e.target.value }))}
+                                                id="title"
+                                                name="title"
+                                                placeholder="e.g., Private Document"
+                                                value={formData.title}
+                                                onChange={handleInputChange}
                                                 className="bg-background/50"
                                             />
                                         </div>
 
-                                        <div className="space-y-3">
-                                            <Label>Destination URLs</Label>
-                                            {rotatorData.urls.map((url, index) => (
-                                                <div key={index} className="flex gap-2">
-                                                    <Input
-                                                        placeholder={`https://site-${index + 1}.com`}
-                                                        value={url}
-                                                        onChange={(e) => handleRotatorChange(index, e.target.value)}
-                                                        className="bg-background/50"
-                                                        required={index < 2} // Require at least 2 URLs initially
-                                                    />
-                                                    {rotatorData.urls.length > 2 && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => removeRotatorUrl(index)}
-                                                            className="shrink-0 text-muted-foreground hover:text-destructive"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            ))}
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={addRotatorUrl}
-                                                className="w-full mt-2 border-dashed"
-                                            >
-                                                <Plus className="h-4 w-4 mr-2" /> Add Another URL
-                                            </Button>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="originalUrl">Destination URL</Label>
+                                            <Input
+                                                id="originalUrl"
+                                                name="originalUrl"
+                                                placeholder="https://your-site.com/private-page"
+                                                required
+                                                value={formData.originalUrl}
+                                                onChange={handleInputChange}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="password">
+                                                Password {editId && <span className="text-muted-foreground font-normal">(leave blank to keep current)</span>}
+                                            </Label>
+                                            <div className="relative">
+                                                <Input
+                                                    id="password"
+                                                    name="password"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    placeholder={editId ? '••••••••' : 'Enter a secure password'}
+                                                    required={!editId}
+                                                    minLength={4}
+                                                    value={formData.password}
+                                                    onChange={handleInputChange}
+                                                    className="bg-background/50 pr-10"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                                                </Button>
+                                            </div>
+                                            <p className="text-xs text-muted-foreground">Minimum 4 characters. Share this password with people you want to give access.</p>
                                         </div>
 
                                         <div className="space-y-2">
@@ -236,7 +237,7 @@ function RotatorContent() {
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                             ) : (
                                                 <span className="flex items-center">
-                                                    {editId ? 'Update Rotator Link' : 'Create Rotator Link'} <Repeat className="ml-2 h-4 w-4" />
+                                                    {editId ? 'Update Protected Link' : 'Create Protected Link'} <ArrowRight className="ml-2 h-4 w-4" />
                                                 </span>
                                             )}
                                         </Button>
@@ -248,13 +249,13 @@ function RotatorContent() {
                                                 <Check className="h-5 w-5" />
                                             </div>
                                             <div>
-                                                <p className="font-semibold">{editId ? 'Rotator Updated Successfully!' : 'Link Created Successfully!'}</p>
-                                                <p className="text-sm opacity-90">Your link is ready to share.</p>
+                                                <p className="font-semibold">{editId ? 'Link Updated Successfully!' : 'Link Created Successfully!'}</p>
+                                                <p className="text-sm opacity-90">Your protected link is ready to share.</p>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>Your Short Link</Label>
+                                            <Label>Your Protected Link</Label>
                                             <div className="flex items-center gap-2">
                                                 <Input value={generatedUrl} readOnly className="font-mono text-sm bg-muted/50" />
                                                 <Button size="icon" onClick={copyToClipboard} className="shrink-0">
@@ -263,12 +264,10 @@ function RotatorContent() {
                                             </div>
                                         </div>
 
-                                        <Button variant="outline" className="w-full" asChild>
-                                            <Link href={`/analytics/rotator/${generatedUrl.split('/').pop()}`}>
-                                                <BarChart3 className="mr-2 h-4 w-4" />
-                                                View Analytics
-                                            </Link>
-                                        </Button>
+                                        <div className="p-3 bg-muted/30 rounded-lg text-sm text-muted-foreground">
+                                            <Lock className="h-4 w-4 inline mr-2" />
+                                            Don&apos;t forget to share the password with authorized users!
+                                        </div>
 
                                         <Button variant="outline" className="w-full" onClick={resetForm}>
                                             Create Another Link
@@ -279,7 +278,7 @@ function RotatorContent() {
                         </Card>
                     </motion.div>
 
-                    {/* Right Column: Live Preview */}
+                    {/* Right Column: Info */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -287,34 +286,40 @@ function RotatorContent() {
                         className="lg:sticky lg:top-24 space-y-6"
                     >
                         <div className="text-center lg:text-left">
-                            <h3 className="text-2xl font-semibold mb-2">Live Preview</h3>
+                            <h3 className="text-2xl font-semibold mb-2">Password Protection</h3>
                             <p className="text-muted-foreground mb-6">
-                                Rotator links will redirect users to one of your destination URLs randomly.
+                                Add an extra layer of security to your shared links.
                             </p>
                         </div>
 
                         <Card className="border-border/50 bg-card/50">
                             <CardHeader>
-                                <CardTitle className="text-lg">How Rotators Work</CardTitle>
+                                <CardTitle className="text-lg">Use Cases</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-start gap-3">
                                     <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                                         <span className="text-xs font-bold text-primary">1</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">You add multiple destination URLs (e.g., for A/B testing different landing pages).</p>
+                                    <p className="text-sm text-muted-foreground">Share confidential documents with specific people only.</p>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                                         <span className="text-xs font-bold text-primary">2</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">We generate a single short link for you to share.</p>
+                                    <p className="text-sm text-muted-foreground">Protect exclusive content for members or subscribers.</p>
                                 </div>
                                 <div className="flex items-start gap-3">
                                     <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                                         <span className="text-xs font-bold text-primary">3</span>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">When someone clicks the link, we randomly redirect them to one of your destinations.</p>
+                                    <p className="text-sm text-muted-foreground">Share preview links with clients before public launch.</p>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                        <span className="text-xs font-bold text-primary">4</span>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">Control access to private resources or downloads.</p>
                                 </div>
                             </CardContent>
                         </Card>
@@ -325,10 +330,10 @@ function RotatorContent() {
     )
 }
 
-export default function RotatorPage() {
+export default function ProtectedPage() {
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
-            <RotatorContent />
+            <ProtectedContent />
         </Suspense>
     )
 }

@@ -12,6 +12,7 @@ import { LinkPreview } from '@/components/LinkPreview'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { CampaignSelector } from '@/components/CampaignSelector'
 
 function PreviewContent() {
     const [loading, setLoading] = useState(false)
@@ -21,6 +22,8 @@ function PreviewContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const editId = searchParams.get('edit')
+    const [userId, setUserId] = useState<string | null>(null)
+    const [campaignId, setCampaignId] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         title: '',
@@ -30,6 +33,12 @@ function PreviewContent() {
     })
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) setUserId(user.id)
+        }
+        checkUser()
+
         if (editId) {
             const fetchCard = async () => {
                 const { data } = await supabase
@@ -45,6 +54,7 @@ function PreviewContent() {
                         imageUrl: data.image_url,
                         originalUrl: data.original_url
                     })
+                    if (data.campaign_id) setCampaignId(data.campaign_id)
                 }
             }
             fetchCard()
@@ -113,7 +123,8 @@ function PreviewContent() {
                 body: JSON.stringify({
                     ...formData,
                     id: editId,
-                    user_id: user.id
+                    user_id: user.id,
+                    campaign_id: campaignId
                 }),
                 headers: { 'Content-Type': 'application/json' },
             })
@@ -254,6 +265,13 @@ function PreviewContent() {
                                                 </div>
                                                 <span className="text-xs text-muted-foreground">or paste URL above</span>
                                             </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <CampaignSelector
+                                                userId={userId}
+                                                selectedCampaignId={campaignId}
+                                                onCampaignChange={setCampaignId}
+                                            />
                                         </div>
                                         <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
                                             {loading ? (

@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid'
 export async function POST(request: Request) {
     try {
         const body = await request.json()
-        const { title, urls, user_id } = body
+        const { title, urls, user_id, campaign_id } = body
 
         if (!urls || !Array.isArray(urls) || urls.length === 0) {
             return NextResponse.json(
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
                 slug,
                 title: title || 'Untitled Rotator',
                 user_id: user_id || null,
+                campaign_id: campaign_id || null,
             })
             .select()
             .single()
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const body = await request.json()
-        const { id, title, urls, user_id } = body
+        const { id, title, urls, user_id, campaign_id } = body
 
         if (!id) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 })
@@ -88,6 +89,7 @@ export async function PUT(request: Request) {
             .from('rotators')
             .update({
                 title: title || 'Untitled Rotator',
+                campaign_id: campaign_id || null,
             })
             .eq('id', id)
             .eq('user_id', user_id)
