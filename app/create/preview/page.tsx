@@ -24,6 +24,7 @@ function PreviewContent() {
     const editId = searchParams.get('edit')
     const [userId, setUserId] = useState<string | null>(null)
     const [campaignId, setCampaignId] = useState<string | null>(null)
+    const [createdId, setCreatedId] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         title: '',
@@ -96,6 +97,27 @@ function PreviewContent() {
         }
     }
 
+    const handleCampaignChange = async (newCampaignId: string | null) => {
+        setCampaignId(newCampaignId)
+        const targetId = editId || createdId
+        if (!targetId || !userId) return
+
+        try {
+            await fetch('/api/create', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    ...formData,
+                    id: targetId,
+                    user_id: userId,
+                    campaign_id: newCampaignId
+                }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+        } catch (error) {
+            console.error('Failed to update campaign', error)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -131,6 +153,9 @@ function PreviewContent() {
             const json = await res.json()
             if (json.slug) {
                 setGeneratedUrl(`${window.location.origin}/p/${json.slug}`)
+            }
+            if (json.id) {
+                setCreatedId(json.id)
             }
         } catch (err) {
             console.error(err)
@@ -266,13 +291,7 @@ function PreviewContent() {
                                                 <span className="text-xs text-muted-foreground">or paste URL above</span>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <CampaignSelector
-                                                userId={userId}
-                                                selectedCampaignId={campaignId}
-                                                onCampaignChange={setCampaignId}
-                                            />
-                                        </div>
+
                                         <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
                                             {loading ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -303,6 +322,14 @@ function PreviewContent() {
                                                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                                                 </Button>
                                             </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <CampaignSelector
+                                                userId={userId}
+                                                selectedCampaignId={campaignId}
+                                                onCampaignChange={handleCampaignChange}
+                                            />
                                         </div>
 
                                         <Button variant="outline" className="w-full" asChild>

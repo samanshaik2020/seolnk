@@ -21,6 +21,7 @@ function RotatorContent() {
     const editId = searchParams.get('edit')
     const [userId, setUserId] = useState<string | null>(null)
     const [campaignId, setCampaignId] = useState<string | null>(null)
+    const [createdId, setCreatedId] = useState<string | null>(null)
 
     // Rotator State
     const [rotatorData, setRotatorData] = useState({
@@ -71,6 +72,30 @@ function RotatorContent() {
         setRotatorData(prev => ({ ...prev, urls: newUrls }))
     }
 
+    const handleCampaignChange = async (newCampaignId: string | null) => {
+        setCampaignId(newCampaignId)
+        const targetId = editId || createdId
+        if (!targetId || !userId) return
+
+        const validUrls = rotatorData.urls.filter(u => u.trim() !== '')
+
+        try {
+            await fetch('/api/rotator/create', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    id: targetId,
+                    title: rotatorData.title,
+                    urls: validUrls,
+                    user_id: userId,
+                    campaign_id: newCampaignId
+                }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+        } catch (error) {
+            console.error('Failed to update campaign', error)
+        }
+    }
+
     const handleRotatorSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -114,6 +139,7 @@ function RotatorContent() {
             const json = await res.json()
             if (json.slug) {
                 setGeneratedUrl(`${window.location.origin}/r/${json.slug}`)
+                if (json.rotator?.id) setCreatedId(json.rotator.id)
             }
         } catch (err) {
             console.error(err)
@@ -223,13 +249,7 @@ function RotatorContent() {
                                             </Button>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <CampaignSelector
-                                                userId={userId}
-                                                selectedCampaignId={campaignId}
-                                                onCampaignChange={setCampaignId}
-                                            />
-                                        </div>
+
 
                                         <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
                                             {loading ? (
@@ -269,6 +289,14 @@ function RotatorContent() {
                                                 View Analytics
                                             </Link>
                                         </Button>
+
+                                        <div className="space-y-2">
+                                            <CampaignSelector
+                                                userId={userId}
+                                                selectedCampaignId={campaignId}
+                                                onCampaignChange={handleCampaignChange}
+                                            />
+                                        </div>
 
                                         <Button variant="outline" className="w-full" onClick={resetForm}>
                                             Create Another Link

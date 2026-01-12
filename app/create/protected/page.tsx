@@ -22,6 +22,7 @@ function ProtectedContent() {
     const editId = searchParams.get('edit')
     const [userId, setUserId] = useState<string | null>(null)
     const [campaignId, setCampaignId] = useState<string | null>(null)
+    const [createdId, setCreatedId] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         title: '',
@@ -62,6 +63,29 @@ function ProtectedContent() {
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
+    const handleCampaignChange = async (newCampaignId: string | null) => {
+        setCampaignId(newCampaignId)
+        const targetId = editId || createdId
+        if (!targetId || !userId) return
+
+        try {
+            await fetch('/api/protected', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    id: targetId,
+                    title: formData.title,
+                    original_url: formData.originalUrl,
+                    password: formData.password || undefined,
+                    user_id: userId,
+                    campaign_id: newCampaignId
+                }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+        } catch (error) {
+            console.error('Failed to update campaign', error)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -81,6 +105,8 @@ function ProtectedContent() {
             setLoading(false)
             return
         }
+
+
 
         try {
             const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -105,6 +131,7 @@ function ProtectedContent() {
             const json = await res.json()
             if (json.slug) {
                 setGeneratedUrl(`${window.location.origin}/s/${json.slug}`)
+                if (json.id) setCreatedId(json.id)
             } else if (json.error) {
                 alert(json.error)
             }
@@ -224,13 +251,7 @@ function ProtectedContent() {
                                             <p className="text-xs text-muted-foreground">Minimum 4 characters. Share this password with people you want to give access.</p>
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <CampaignSelector
-                                                userId={userId}
-                                                selectedCampaignId={campaignId}
-                                                onCampaignChange={setCampaignId}
-                                            />
-                                        </div>
+
 
                                         <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
                                             {loading ? (
@@ -267,6 +288,14 @@ function ProtectedContent() {
                                         <div className="p-3 bg-muted/30 rounded-lg text-sm text-muted-foreground">
                                             <Lock className="h-4 w-4 inline mr-2" />
                                             Don&apos;t forget to share the password with authorized users!
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <CampaignSelector
+                                                userId={userId}
+                                                selectedCampaignId={campaignId}
+                                                onCampaignChange={handleCampaignChange}
+                                            />
                                         </div>
 
                                         <Button variant="outline" className="w-full" onClick={resetForm}>

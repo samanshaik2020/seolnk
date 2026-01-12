@@ -17,9 +17,62 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  title: {
+    default: "SEOLnk - Advanced Link Management & Custom Previews",
+    template: "%s | SEOLnk"
+  },
+  description: "Create custom social media preview cards, password-protected links, expiring URLs, and A/B test rotators. The ultimate tool for link management and analytics.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://seolnk.com'),
-  title: "SEOLnk - Custom Link Preview Generator",
-  description: "Create custom social media preview cards for your links.",
+  keywords: ["link management", "custom link preview", "url shortener", "seo tools", "social media preview", "link rotator", "expiry link", "password protected link"],
+  authors: [{ name: "SEOLnk Team" }],
+  creator: "SEOLnk",
+  publisher: "SEOLnk",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://seolnk.com",
+    title: "SEOLnk - Advanced Link Management & Custom Previews",
+    description: "Create custom social media preview cards, password-protected links, expiring URLs, and A/B test rotators.",
+    siteName: "SEOLnk",
+    images: [
+      {
+        url: "/og-image.jpg", // Ensure you have a default OG image in public folder
+        width: 1200,
+        height: 630,
+        alt: "SEOLnk - Custom Link Previews",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SEOLnk - Advanced Link Management & Custom Previews",
+    description: "The ultimate tool for link management. Create custom previews, expiring links, and more.",
+    images: ["/og-image.jpg"], // Reusing OG image for consistency
+    creator: "@seolnk", // Replace with actual handle if available
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE", // Replace this with your actual code
+    yandex: "yandex-verification-code",
+    other: {
+      me: ["your-personal-site"],
+    },
+  },
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({

@@ -46,7 +46,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
-        return NextResponse.json({ slug: data.slug })
+        return NextResponse.json({ slug: data.slug, id: data.id })
     } catch (error) {
         console.error('Server error:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

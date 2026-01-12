@@ -27,6 +27,7 @@ function AliasContent() {
     const editId = searchParams.get('edit')
     const [userId, setUserId] = useState<string | null>(null)
     const [campaignId, setCampaignId] = useState<string | null>(null)
+    const [createdId, setCreatedId] = useState<string | null>(null)
 
     const [formData, setFormData] = useState({
         title: '',
@@ -111,6 +112,29 @@ function AliasContent() {
         checkAvailability(suggestion)
     }
 
+    const handleCampaignChange = async (newCampaignId: string | null) => {
+        setCampaignId(newCampaignId)
+        const targetId = editId || createdId
+        if (!targetId || !userId) return
+
+        try {
+            await fetch('/api/alias', {
+                method: 'PUT',
+                body: JSON.stringify({
+                    id: targetId,
+                    title: formData.title,
+                    original_url: formData.originalUrl,
+                    alias: formData.alias,
+                    user_id: userId,
+                    campaign_id: newCampaignId
+                }),
+                headers: { 'Content-Type': 'application/json' },
+            })
+        } catch (error) {
+            console.error('Failed to update campaign', error)
+        }
+    }
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -154,6 +178,7 @@ function AliasContent() {
 
             if (json.alias) {
                 setGeneratedUrl(`${window.location.origin}/a/${json.alias}`)
+                if (json.id) setCreatedId(json.id)
             } else if (json.error) {
                 alert(json.error)
                 if (json.suggestions) {
@@ -311,13 +336,7 @@ function AliasContent() {
                                             />
                                         </div>
 
-                                        <div className="space-y-2">
-                                            <CampaignSelector
-                                                userId={userId}
-                                                selectedCampaignId={campaignId}
-                                                onCampaignChange={setCampaignId}
-                                            />
-                                        </div>
+
 
                                         <Button
                                             type="submit"
@@ -353,6 +372,14 @@ function AliasContent() {
                                                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                                                 </Button>
                                             </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <CampaignSelector
+                                                userId={userId}
+                                                selectedCampaignId={campaignId}
+                                                onCampaignChange={handleCampaignChange}
+                                            />
                                         </div>
 
                                         <Button variant="outline" className="w-full" onClick={resetForm}>
