@@ -249,6 +249,117 @@ export function LandingHero() {
                 </div>
             </section>
 
+            {/* Product Demo Section */}
+            <section className="py-24 sm:py-32 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"></div>
+
+                <div className="container mx-auto px-4 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center max-w-3xl mx-auto mb-16"
+                    >
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                            <Sparkles className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-semibold text-primary">Intuitive Interface</span>
+                        </div>
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6">
+                            See Your Links Come to{' '}
+                            <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                                Life
+                            </span>
+                        </h2>
+                        <p className="text-lg sm:text-xl text-muted-foreground">
+                            Edit your link details and watch the social preview update in real-time. What you see is what your audience gets.
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 40, rotateX: 10 }}
+                        whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, type: "spring" }}
+                        className="max-w-6xl mx-auto"
+                    >
+                        <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/10">
+                            {/* Browser Chrome */}
+                            <div className="bg-muted/50 backdrop-blur-sm border-b border-border/50 px-4 py-3 flex items-center gap-2">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                    <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                    <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                </div>
+                                <div className="flex-1 ml-4">
+                                    <div className="px-4 py-1.5 bg-background/80 rounded-lg text-xs text-muted-foreground border border-border/50 max-w-xs">
+                                        seolnk.com/dashboard/create
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Dashboard Image */}
+                            <div className="relative bg-background">
+                                <img
+                                    src="/dashboard-demo.png"
+                                    alt="SEOLnk Dashboard Interface - Edit Link with Real-time Social Preview"
+                                    className="w-full h-auto"
+                                    style={{ display: 'block' }}
+                                />
+                                {/* Overlay gradient for depth */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent pointer-events-none"></div>
+                            </div>
+
+                            {/* Feature Pills */}
+                            <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2 sm:gap-3">
+                                <div className="px-3 sm:px-4 py-2 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 text-xs sm:text-sm font-medium flex items-center gap-2">
+                                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
+                                    <span>Live Preview</span>
+                                </div>
+                                <div className="px-3 sm:px-4 py-2 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 text-xs sm:text-sm font-medium flex items-center gap-2">
+                                    <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500" />
+                                    <span>Instant Updates</span>
+                                </div>
+                                <div className="px-3 sm:px-4 py-2 rounded-full bg-background/90 backdrop-blur-sm border border-border/50 text-xs sm:text-sm font-medium flex items-center gap-2">
+                                    <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+                                    <span>Easy to Use</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Feature Grid Below */}
+                        <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 mt-12 sm:mt-16">
+                            <div className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
+                                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                    <Eye className="h-6 w-6 text-blue-500" />
+                                </div>
+                                <h3 className="font-bold mb-2">Visual Editor</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    See exactly how your link will appear on social platforms as you edit.
+                                </p>
+                            </div>
+                            <div className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
+                                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                                    <Zap className="h-6 w-6 text-purple-500" />
+                                </div>
+                                <h3 className="font-bold mb-2">Real-Time Updates</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Changes reflect instantly. No refresh needed, no waiting around.
+                                </p>
+                            </div>
+                            <div className="text-center p-6 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50">
+                                <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-green-500/10 flex items-center justify-center">
+                                    <CheckCircle2 className="h-6 w-6 text-green-500" />
+                                </div>
+                                <h3 className="font-bold mb-2">One-Click Save</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Save your changes with a single click and share immediately.
+                                </p>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
             {/* Tools Showcase */}
             <section id="tools" className="py-24 sm:py-32 relative overflow-hidden">
                 <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
