@@ -43,7 +43,7 @@ export default function AuthButton() {
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             setUser(session?.user ?? null)
             if (event === 'SIGNED_OUT') {
-                router.refresh()
+                router.push('/') // Redirect to landing page on logout
             }
         })
 
@@ -52,7 +52,7 @@ export default function AuthButton() {
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
-        router.refresh()
+        router.push('/') // Redirect to landing page
     }
 
     if (loading) {

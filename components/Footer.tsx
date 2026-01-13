@@ -6,9 +6,10 @@ export function Footer() {
                     © {new Date().getFullYear()} SEOLnk. All rights reserved.
                 </p>
                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                    <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-                    <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-                    <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+                    <a href="/privacy" className="hover:text-foreground transition-colors">Privacy</a>
+                    <a href="/terms" className="hover:text-foreground transition-colors">Terms</a>
+                    <a href="/cookies" className="hover:text-foreground transition-colors">Cookies</a>
+                    <a href="/contact" className="hover:text-foreground transition-colors">Contact</a>
                 </div>
             </div>
         </footer>

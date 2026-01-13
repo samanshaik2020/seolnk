@@ -287,7 +287,7 @@ function DashboardContent() {
                     transition-transform duration-200 ease-in-out
                 `}>
                     <div className="p-4">
-                        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-3">
+                        <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
                             Link Tools
                         </h2>
                         <nav className="space-y-1">
@@ -302,15 +302,15 @@ function DashboardContent() {
                                         className={`
                                             flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                                             ${isActive
-                                                ? "bg-primary/10 text-primary"
-                                                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                                ? "bg-primary/10 text-primary font-semibold"
+                                                : "text-foreground hover:text-primary hover:bg-muted"
                                             }
                                         `}
                                     >
                                         <item.icon className="h-4 w-4" />
                                         <div className="flex-1">
-                                            <div>{item.title}</div>
-                                            <div className="text-xs text-muted-foreground/80 font-normal">
+                                            <div className="font-semibold">{item.title}</div>
+                                            <div className="text-xs text-foreground/70">
                                                 {item.description}
                                             </div>
                                         </div>
@@ -321,18 +321,18 @@ function DashboardContent() {
 
                         {/* Campaigns Section */}
                         <div className="mt-6 pt-6 border-t">
-                            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-3">
+                            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
                                 Organization
                             </h2>
                             <Link
                                 href="/campaigns"
                                 onClick={() => setSidebarOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-foreground hover:text-primary hover:bg-muted"
                             >
                                 <FolderOpen className="h-4 w-4" />
                                 <div className="flex-1">
-                                    <div>Campaigns</div>
-                                    <div className="text-xs text-muted-foreground/80 font-normal">
+                                    <div className="font-semibold">Campaigns</div>
+                                    <div className="text-xs text-foreground/70">
                                         Organize links into folders
                                     </div>
                                 </div>
@@ -341,18 +341,18 @@ function DashboardContent() {
 
                         {/* Bio Links Section */}
                         <div className="mt-6 pt-6 border-t">
-                            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-3">
+                            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
                                 Link-in-Bio
                             </h2>
                             <Link
                                 href="/bio-links"
                                 onClick={() => setSidebarOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-foreground hover:text-primary hover:bg-muted"
                             >
                                 <User className="h-4 w-4" />
                                 <div className="flex-1">
-                                    <div>Bio Links</div>
-                                    <div className="text-xs text-muted-foreground/80 font-normal">
+                                    <div className="font-semibold">Bio Links</div>
+                                    <div className="text-xs text-foreground/70">
                                         Your link-in-bio pages
                                     </div>
                                 </div>
@@ -375,7 +375,7 @@ function DashboardContent() {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{currentTab.title}</h1>
-                                <p className="text-sm sm:text-base text-muted-foreground">{currentTab.description}</p>
+                                <p className="text-base sm:text-lg text-muted-foreground mt-1">{currentTab.description}</p>
                             </div>
                             <Button asChild className="w-full sm:w-auto">
                                 <Link href={currentTab.href}>
