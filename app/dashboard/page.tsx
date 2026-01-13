@@ -81,7 +81,7 @@ interface CustomAliasData {
 // Sidebar navigation items
 const sidebarItems = [
     {
-        title: 'Link Render',
+        title: 'Link Previews',
         value: 'links',
         icon: LinkIcon,
         description: 'Custom social previews',

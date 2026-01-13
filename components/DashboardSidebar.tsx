@@ -12,7 +12,7 @@ const sidebarItems = [
         icon: LayoutDashboard,
     },
     {
-        title: 'Link Render',
+        title: 'Link Previews',
         href: '/dashboard?tab=links',
         icon: LinkIcon,
         description: 'Custom social previews'

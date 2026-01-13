@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 import { Footer } from "@/components/Footer";
 import { CookieConsent } from "@/components/CookieConsent";
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE", // Replace this with your actual code
+    google: "jDXP6xeTP3wpEYRRRHgeW7-wzrwFGdo-DyJqFR4aPTE",
     yandex: "yandex-verification-code",
     other: {
       me: ["your-personal-site"],
@@ -81,8 +82,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-XXXXXXXXXX"; // Fallback placeholder
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google Analytics - gtag.js */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            // Default consent to 'denied'
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied'
+            });
+
+            gtag('config', '${GA_ID}');
+          `}
+        </Script>
+      </head>
       <body
         suppressHydrationWarning
         className={`${outfit.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}
@@ -97,3 +121,4 @@ export default function RootLayout({
     </html>
   );
 }
+

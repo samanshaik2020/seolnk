@@ -95,7 +95,7 @@ function LoginContent() {
                 </div>
 
                 <div className="relative z-10 text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} Link Render. All rights reserved.
+                    &copy; {new Date().getFullYear()} SEOLnk. All rights reserved.
                 </div>
             </div>
 
