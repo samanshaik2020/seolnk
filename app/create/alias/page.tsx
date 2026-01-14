@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Loader2, Copy, Check, Zap, Sparkles, ArrowLeft, ArrowRight, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
+import { Loader2, Copy, Check, Zap, Sparkles, ArrowLeft, ArrowRight, CheckCircle, XCircle, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CampaignSelector } from '@/components/CampaignSelector'
+import { useUrlSafety } from '@/hooks/useUrlSafety'
 
 function AliasContent() {
     const [loading, setLoading] = useState(false)
@@ -34,6 +35,9 @@ function AliasContent() {
         originalUrl: '',
         alias: ''
     })
+
+    // URL Safety Check Hook
+    const { isChecking: isCheckingUrl, isUnsafe, threatMessage, checkUrl, reset: resetUrlCheck } = useUrlSafety()
 
     useEffect(() => {
         const checkUser = async () => {
@@ -99,6 +103,16 @@ function AliasContent() {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setFormData(prev => ({ ...prev, [name]: value }))
+        if (name === 'originalUrl') {
+            resetUrlCheck()
+        }
+    }
+
+    // Check URL safety when user leaves the URL input field
+    const handleUrlBlur = async () => {
+        if (formData.originalUrl) {
+            await checkUrl(formData.originalUrl)
+        }
     }
 
     const handleAliasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,6 +164,13 @@ function AliasContent() {
 
         if (!editId && !availability.available) {
             alert('Please choose an available alias')
+            setLoading(false)
+            return
+        }
+
+        // Check URL safety before submitting
+        const isSafe = await checkUrl(formData.originalUrl)
+        if (!isSafe) {
             setLoading(false)
             return
         }
@@ -325,15 +346,47 @@ function AliasContent() {
 
                                         <div className="space-y-2">
                                             <Label htmlFor="originalUrl">Destination URL</Label>
-                                            <Input
-                                                id="originalUrl"
-                                                name="originalUrl"
-                                                placeholder="https://your-site.com/page"
-                                                required
-                                                value={formData.originalUrl}
-                                                onChange={handleInputChange}
-                                                className="bg-background/50"
-                                            />
+                                            <div className="relative">
+                                                <Input
+                                                    id="originalUrl"
+                                                    name="originalUrl"
+                                                    placeholder="https://your-site.com/page"
+                                                    required
+                                                    value={formData.originalUrl}
+                                                    onChange={handleInputChange}
+                                                    onBlur={handleUrlBlur}
+                                                    className={`bg-background/50 pr-10 ${isUnsafe ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                                                />
+                                                {isCheckingUrl && (
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                                                    </div>
+                                                )}
+                                                {!isCheckingUrl && formData.originalUrl && !isUnsafe && (
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                        <ShieldCheck className="h-4 w-4 text-green-500" />
+                                                    </div>
+                                                )}
+                                                {isUnsafe && (
+                                                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                        <ShieldAlert className="h-4 w-4 text-red-500" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {isUnsafe && threatMessage && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-start gap-2 text-sm text-red-600 dark:text-red-400"
+                                                >
+                                                    <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="font-semibold">Dangerous URL Detected!</p>
+                                                        <p>{threatMessage}</p>
+                                                        <p className="mt-1 text-xs opacity-80">This link cannot be created for safety reasons.</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
                                         </div>
 
 
@@ -341,10 +394,18 @@ function AliasContent() {
                                         <Button
                                             type="submit"
                                             className="w-full h-11 text-base"
-                                            disabled={loading || (!editId && availability.available !== true)}
+                                            disabled={loading || isUnsafe || isCheckingUrl || (!editId && availability.available !== true)}
                                         >
                                             {loading ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : isCheckingUrl ? (
+                                                <span className="flex items-center">
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking URL Safety...
+                                                </span>
+                                            ) : isUnsafe ? (
+                                                <span className="flex items-center">
+                                                    <ShieldAlert className="mr-2 h-4 w-4" /> URL Blocked
+                                                </span>
                                             ) : (
                                                 <span className="flex items-center">
                                                     {editId ? 'Update Alias' : 'Create Alias'} <ArrowRight className="ml-2 h-4 w-4" />

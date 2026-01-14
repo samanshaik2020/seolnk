@@ -3,10 +3,22 @@ import { supabase } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import { nanoid } from 'nanoid'
 import probe from 'probe-image-size'
+import { checkUrlSafety, getThreatDescription } from '@/lib/safe-browsing'
 
 export async function POST(request: Request) {
     try {
         const { title, description, imageUrl, originalUrl, user_id, campaign_id } = await request.json()
+
+        // Check URL safety before proceeding
+        const safetyCheck = await checkUrlSafety(originalUrl)
+        if (!safetyCheck.safe) {
+            const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+            return NextResponse.json({
+                error: 'Unsafe URL detected',
+                message: getThreatDescription(threatType),
+                threatType
+            }, { status: 400 })
+        }
 
         // Validate image and get dimensions
         let dimensions
@@ -59,6 +71,17 @@ export async function PUT(request: Request) {
 
         if (!id) {
             return NextResponse.json({ error: 'ID is required' }, { status: 400 })
+        }
+
+        // Check URL safety before proceeding
+        const safetyCheck = await checkUrlSafety(originalUrl)
+        if (!safetyCheck.safe) {
+            const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+            return NextResponse.json({
+                error: 'Unsafe URL detected',
+                message: getThreatDescription(threatType),
+                threatType
+            }, { status: 400 })
         }
 
         // Validate image and get dimensions

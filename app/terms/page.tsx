@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, FileText, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, FileText, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default function TermsPage() {
                         </h1>
 
                         <p className="text-lg sm:text-xl text-white/90 mb-4 max-w-2xl mx-auto">
-                            Last Updated: January 13, 2026
+                            Last Updated: January 14, 2026
                         </p>
                     </div>
                 </div>
@@ -126,6 +126,50 @@ export default function TermsPage() {
                             </ul>
                         </section>
 
+                        {/* URL Safety and Content Moderation */}
+                        <section className="mb-12">
+                            <div className="p-6 rounded-xl bg-green-500/10 border-2 border-green-500/30">
+                                <div className="flex items-start gap-3 mb-4">
+                                    <ShieldCheck className="h-8 w-8 text-green-600 flex-shrink-0 mt-1" />
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-green-700 dark:text-green-400 m-0">4. URL Safety Enforcement</h2>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 text-base">
+                                    <p>
+                                        To protect our users and maintain platform integrity, SEOLnk uses <strong>automated URL safety checking</strong> powered by Google Safe Browsing to screen all URLs submitted to our platform.
+                                    </p>
+
+                                    <div className="bg-background/50 p-4 rounded-lg border border-green-500/20">
+                                        <p className="font-bold mb-2">Automated URL Screening:</p>
+                                        <ul className="space-y-2 text-sm">
+                                            <li>
+                                                <strong>Malware Detection:</strong> URLs pointing to sites distributing malware or viruses will be automatically blocked.
+                                            </li>
+                                            <li>
+                                                <strong>Phishing Prevention:</strong> URLs identified as phishing or social engineering attempts will be rejected.
+                                            </li>
+                                            <li>
+                                                <strong>Unwanted Software:</strong> Links to sites hosting unwanted or potentially harmful applications will not be accepted.
+                                            </li>
+                                            <li>
+                                                <strong>Real-Time Checking:</strong> All URLs are checked in real-time before link creation is allowed.
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <p>
+                                        <strong>User Notification:</strong> If a URL is flagged as potentially dangerous, you will be notified immediately and the link will not be created. We encourage you to verify that all URLs you submit are from legitimate, safe sources.
+                                    </p>
+
+                                    <p className="text-sm text-muted-foreground">
+                                        <strong>Note:</strong> While we strive to detect all malicious URLs, no system is 100% effective. Users remain responsible for the content and safety of URLs they submit. We reserve the right to remove links at any time if they are later found to be harmful.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+
                         {/* CRITICAL: Health and Medical Disclaimer */}
                         <section className="mb-12">
                             <div className="p-6 rounded-xl bg-red-500/10 border-2 border-red-500/30">
@@ -183,7 +227,7 @@ export default function TermsPage() {
 
                         {/* Content and Links */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">5. Content and Links</h2>
+                            <h2 className="text-2xl font-bold mb-4">6. Content and Links</h2>
 
                             <h3 className="text-xl font-semibold mt-6 mb-3">User Content</h3>
                             <ul className="space-y-2">
@@ -202,7 +246,7 @@ export default function TermsPage() {
 
                         {/* Intellectual Property */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">6. Intellectual Property</h2>
+                            <h2 className="text-2xl font-bold mb-4">7. Intellectual Property</h2>
 
                             <p>
                                 All rights, title, and interest in and to SEOLnk (including but not limited to software, designs, logos,
@@ -213,7 +257,7 @@ export default function TermsPage() {
 
                         {/* Payment and Subscriptions */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">7. Payment and Subscriptions</h2>
+                            <h2 className="text-2xl font-bold mb-4">8. Payment and Subscriptions</h2>
 
                             <ul className="space-y-2">
                                 <li>Subscription fees are billed in advance on a recurring basis</li>
@@ -228,7 +272,7 @@ export default function TermsPage() {
                         <section className="mb-12">
                             <div className="flex items-start gap-3 mb-4">
                                 <AlertTriangle className="h-6 w-6 text-yellow-600 flex-shrink-0 mt-1" />
-                                <h2 className="text-2xl font-bold m-0">8. Limitation of Liability</h2>
+                                <h2 className="text-2xl font-bold m-0">9. Limitation of Liability</h2>
                             </div>
 
                             <p className="font-semibold mb-4">
@@ -255,7 +299,7 @@ export default function TermsPage() {
 
                         {/* Indemnification */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">9. Indemnification</h2>
+                            <h2 className="text-2xl font-bold mb-4">10. Indemnification</h2>
 
                             <p>
                                 You agree to indemnify, defend, and hold harmless SEOLnk and its officers, directors, employees, and agents
@@ -271,7 +315,7 @@ export default function TermsPage() {
 
                         {/* Termination */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">10. Termination</h2>
+                            <h2 className="text-2xl font-bold mb-4">11. Termination</h2>
 
                             <p>
                                 We reserve the right to suspend or terminate your account and access to our services at any time,
@@ -286,7 +330,7 @@ export default function TermsPage() {
 
                         {/* Governing Law */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">11. Governing Law and Disputes</h2>
+                            <h2 className="text-2xl font-bold mb-4">12. Governing Law and Disputes</h2>
 
                             <p>
                                 These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction],
@@ -297,7 +341,7 @@ export default function TermsPage() {
 
                         {/* Changes to Terms */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">12. Changes to These Terms</h2>
+                            <h2 className="text-2xl font-bold mb-4">13. Changes to These Terms</h2>
 
                             <p>
                                 We reserve the right to modify these Terms at any time. We will notify users of material changes via
@@ -308,7 +352,7 @@ export default function TermsPage() {
 
                         {/* Severability */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">13. Severability</h2>
+                            <h2 className="text-2xl font-bold mb-4">14. Severability</h2>
 
                             <p>
                                 If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions will
@@ -318,7 +362,7 @@ export default function TermsPage() {
 
                         {/* Contact */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">14. Contact Information</h2>
+                            <h2 className="text-2xl font-bold mb-4">15. Contact Information</h2>
 
                             <p>
                                 If you have any questions or concerns about these Terms, please contact us:

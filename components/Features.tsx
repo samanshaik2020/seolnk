@@ -19,8 +19,8 @@ const features = [
         bg: "bg-blue-500/10"
     },
     {
-        name: 'Bio Links',
-        description: 'Create your own link-in-bio page like Linktree. Share all your important links in one beautiful page.',
+        name: 'Linktree',
+        description: 'Create your own link-in-bio page with 16+ themes, 80+ icons, and custom animations.',
         icon: User,
         color: "text-pink-500",
         bg: "bg-pink-500/10"

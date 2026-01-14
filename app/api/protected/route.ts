@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { nanoid } from 'nanoid'
 import crypto from 'crypto'
+import { checkUrlSafety, getThreatDescription } from '@/lib/safe-browsing'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +21,17 @@ export async function POST(request: NextRequest) {
 
         if (!original_url || !password || !user_id) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+        }
+
+        // Check URL safety before proceeding
+        const safetyCheck = await checkUrlSafety(original_url)
+        if (!safetyCheck.safe) {
+            const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+            return NextResponse.json({
+                error: 'Unsafe URL detected',
+                message: getThreatDescription(threatType),
+                threatType
+            }, { status: 400 })
         }
 
         if (password.length < 4) {
@@ -62,6 +74,17 @@ export async function PUT(request: NextRequest) {
 
         if (!id || !original_url || !user_id) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+        }
+
+        // Check URL safety before proceeding
+        const safetyCheck = await checkUrlSafety(original_url)
+        if (!safetyCheck.safe) {
+            const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+            return NextResponse.json({
+                error: 'Unsafe URL detected',
+                message: getThreatDescription(threatType),
+                threatType
+            }, { status: 400 })
         }
 
         const updateData: Record<string, string | null> = {

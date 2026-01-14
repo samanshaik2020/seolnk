@@ -82,7 +82,7 @@ export default function BioAnalyticsPage({ params }: { params: Promise<{ id: str
             <div className="min-h-screen flex flex-col items-center justify-center p-4">
                 <p className="text-destructive mb-4">{error || 'Failed to load analytics'}</p>
                 <Button asChild>
-                    <Link href="/bio-links">Back to Bio Links</Link>
+                    <Link href="/bio-links">Back to Linktree</Link>
                 </Button>
             </div>
         )
@@ -328,7 +328,7 @@ export default function BioAnalyticsPage({ params }: { params: Promise<{ id: str
                     {/* Back Button */}
                     <div className="text-center">
                         <Button variant="ghost" asChild>
-                            <Link href="/bio-links">← Back to Bio Links</Link>
+                            <Link href="/bio-links">← Back to Linktree</Link>
                         </Button>
                     </div>
                 </div>

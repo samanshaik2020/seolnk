@@ -67,6 +67,17 @@ const themes: Record<string, ThemeStyles> = {
         buttonHover: 'hover:bg-zinc-700 hover:scale-[1.02]',
         accent: 'bg-white'
     },
+    minimal: {
+        background: 'bg-white dark:bg-black',
+        cardBg: 'bg-transparent',
+        textPrimary: 'text-black dark:text-white',
+        textSecondary: 'text-gray-500 dark:text-gray-400',
+        buttonBg: 'bg-transparent',
+        buttonText: 'text-black dark:text-white',
+        buttonBorder: 'border-black dark:border-white',
+        buttonHover: 'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:scale-[1.02]',
+        accent: 'bg-black dark:bg-white'
+    },
     gradient: {
         background: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
         cardBg: 'bg-white/10 backdrop-blur-lg',
@@ -77,6 +88,72 @@ const themes: Record<string, ThemeStyles> = {
         buttonBorder: 'border-white/30',
         buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
         accent: 'bg-white'
+    },
+    sunset: {
+        background: 'bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600',
+        cardBg: 'bg-white/10 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/20 backdrop-blur-sm',
+        buttonText: 'text-white',
+        buttonBorder: 'border-white/30',
+        buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
+        accent: 'bg-white'
+    },
+    ocean: {
+        background: 'bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700',
+        cardBg: 'bg-white/10 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/20 backdrop-blur-sm',
+        buttonText: 'text-white',
+        buttonBorder: 'border-white/30',
+        buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
+        accent: 'bg-white'
+    },
+    forest: {
+        background: 'bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600',
+        cardBg: 'bg-white/10 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/20 backdrop-blur-sm',
+        buttonText: 'text-white',
+        buttonBorder: 'border-white/30',
+        buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
+        accent: 'bg-emerald-300'
+    },
+    lavender: {
+        background: 'bg-gradient-to-br from-purple-300 via-violet-400 to-purple-500',
+        cardBg: 'bg-white/20 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/25 backdrop-blur-sm',
+        buttonText: 'text-purple-900',
+        buttonBorder: 'border-white/40',
+        buttonHover: 'hover:bg-white/40 hover:scale-[1.02]',
+        accent: 'bg-purple-200'
+    },
+    candy: {
+        background: 'bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500',
+        cardBg: 'bg-white/20 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/25 backdrop-blur-sm',
+        buttonText: 'text-pink-900',
+        buttonBorder: 'border-white/40',
+        buttonHover: 'hover:bg-white/40 hover:scale-[1.02]',
+        accent: 'bg-pink-200'
+    },
+    aurora: {
+        background: 'bg-gradient-to-br from-green-400 via-cyan-500 to-purple-600',
+        cardBg: 'bg-white/10 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-white/80',
+        buttonBg: 'bg-white/15 backdrop-blur-sm',
+        buttonText: 'text-white',
+        buttonBorder: 'border-white/30',
+        buttonHover: 'hover:bg-white/25 hover:scale-[1.02]',
+        accent: 'bg-cyan-300'
     },
     glassmorphism: {
         background: 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900',
@@ -100,46 +177,72 @@ const themes: Record<string, ThemeStyles> = {
         buttonHover: 'hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-[1.02]',
         accent: 'bg-cyan-400'
     },
-    minimal: {
-        background: 'bg-white dark:bg-black',
-        cardBg: 'bg-transparent',
-        textPrimary: 'text-black dark:text-white',
-        textSecondary: 'text-gray-500 dark:text-gray-400',
-        buttonBg: 'bg-transparent',
-        buttonText: 'text-black dark:text-white',
-        buttonBorder: 'border-black dark:border-white',
-        buttonHover: 'hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black hover:scale-[1.02]',
-        accent: 'bg-black dark:bg-white'
+    midnight: {
+        background: 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900',
+        cardBg: 'bg-blue-950/50 backdrop-blur-lg',
+        textPrimary: 'text-white',
+        textSecondary: 'text-blue-200/80',
+        buttonBg: 'bg-blue-800/50 backdrop-blur-sm',
+        buttonText: 'text-white',
+        buttonBorder: 'border-blue-400/30',
+        buttonHover: 'hover:bg-blue-700/50 hover:scale-[1.02]',
+        accent: 'bg-blue-400'
     },
-    sunset: {
-        background: 'bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600',
+    emerald: {
+        background: 'bg-gradient-to-br from-emerald-600 via-green-700 to-emerald-800',
         cardBg: 'bg-white/10 backdrop-blur-lg',
         textPrimary: 'text-white',
-        textSecondary: 'text-white/80',
-        buttonBg: 'bg-white/20 backdrop-blur-sm',
+        textSecondary: 'text-emerald-100/80',
+        buttonBg: 'bg-white/15 backdrop-blur-sm',
         buttonText: 'text-white',
-        buttonBorder: 'border-white/30',
-        buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
-        accent: 'bg-white'
+        buttonBorder: 'border-emerald-300/30',
+        buttonHover: 'hover:bg-white/25 hover:scale-[1.02]',
+        accent: 'bg-emerald-300'
     },
-    ocean: {
-        background: 'bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700',
-        cardBg: 'bg-white/10 backdrop-blur-lg',
+    coral: {
+        background: 'bg-gradient-to-br from-orange-300 via-rose-400 to-pink-400',
+        cardBg: 'bg-white/25 backdrop-blur-lg',
+        textPrimary: 'text-rose-900',
+        textSecondary: 'text-rose-800/80',
+        buttonBg: 'bg-white/40 backdrop-blur-sm',
+        buttonText: 'text-rose-900',
+        buttonBorder: 'border-rose-300/50',
+        buttonHover: 'hover:bg-white/60 hover:scale-[1.02]',
+        accent: 'bg-rose-500'
+    },
+    arctic: {
+        background: 'bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-300',
+        cardBg: 'bg-white/60 backdrop-blur-lg',
+        textPrimary: 'text-slate-800',
+        textSecondary: 'text-slate-600',
+        buttonBg: 'bg-white/80 backdrop-blur-sm',
+        buttonText: 'text-slate-800',
+        buttonBorder: 'border-blue-300/50',
+        buttonHover: 'hover:bg-white hover:scale-[1.02]',
+        accent: 'bg-blue-500'
+    },
+    autumn: {
+        background: 'bg-gradient-to-br from-amber-400 via-orange-500 to-red-600',
+        cardBg: 'bg-white/15 backdrop-blur-lg',
         textPrimary: 'text-white',
-        textSecondary: 'text-white/80',
+        textSecondary: 'text-amber-100/80',
         buttonBg: 'bg-white/20 backdrop-blur-sm',
         buttonText: 'text-white',
-        buttonBorder: 'border-white/30',
+        buttonBorder: 'border-amber-200/30',
         buttonHover: 'hover:bg-white/30 hover:scale-[1.02]',
-        accent: 'bg-white'
-    }
+        accent: 'bg-amber-300'
+    },
 }
 
 const animations: Record<string, string> = {
     none: '',
     pulse: 'animate-pulse',
     bounce: 'hover:animate-bounce',
-    shake: 'hover:animate-[shake_0.5s_ease-in-out]'
+    shake: 'hover:animate-[shake_0.5s_ease-in-out]',
+    glow: 'hover:shadow-[0_0_25px_rgba(255,255,255,0.4)] transition-shadow duration-300',
+    slide: 'hover:-translate-y-1 transition-transform duration-200',
+    wiggle: 'hover:animate-[wiggle_0.3s_ease-in-out]',
+    heartbeat: 'hover:animate-[heartbeat_0.5s_ease-in-out]',
 }
 
 export default function BioPageClient({ username }: { username: string }) {

@@ -134,7 +134,7 @@ export default function BioLinksPage() {
                     {/* Page Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                         <div>
-                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Bio Links</h1>
+                            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Linktree</h1>
                             <p className="text-muted-foreground">Create your link-in-bio page</p>
                         </div>
                         <Button asChild>

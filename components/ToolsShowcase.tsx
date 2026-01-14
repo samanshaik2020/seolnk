@@ -74,14 +74,14 @@ const tools = [
         blogLink: '/blog/protected-links'
     },
     {
-        name: 'Bio Links',
-        slug: 'bio-links',
+        name: 'Linktree',
+        slug: 'bio',
         description: 'Your personal link-in-bio page. All your links in one beautiful, customizable page.',
         icon: User,
         color: 'from-pink-500 to-rose-500',
         textColor: 'text-pink-500',
         bgColor: 'bg-pink-500/10',
-        features: ['Unlimited Links', 'Full Customization', 'Analytics'],
+        features: ['16+ Themes', '80+ Icons', 'Full Customization'],
         blogLink: '/blog/bio-links'
     }
 ];

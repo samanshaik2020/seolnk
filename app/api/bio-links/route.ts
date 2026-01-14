@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkUrlSafety, getThreatDescription } from '@/lib/safe-browsing'
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -60,6 +61,17 @@ export async function POST(request: NextRequest) {
             new URL(url)
         } catch {
             return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })
+        }
+
+        // Check URL safety before proceeding
+        const safetyCheck = await checkUrlSafety(url)
+        if (!safetyCheck.safe) {
+            const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+            return NextResponse.json({
+                error: 'Unsafe URL detected',
+                message: getThreatDescription(threatType),
+                threatType
+            }, { status: 400 })
         }
 
         // Get the max order_index if not provided
@@ -149,6 +161,16 @@ export async function PUT(request: NextRequest) {
         if (url !== undefined) {
             try {
                 new URL(url)
+                // Check URL safety before proceeding
+                const safetyCheck = await checkUrlSafety(url)
+                if (!safetyCheck.safe) {
+                    const threatType = safetyCheck.threats[0]?.threatType || 'UNKNOWN'
+                    return NextResponse.json({
+                        error: 'Unsafe URL detected',
+                        message: getThreatDescription(threatType),
+                        threatType
+                    }, { status: 400 })
+                }
                 updateData.url = url
             } catch {
                 return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 })

@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Loader2, Copy, Check, Repeat, Plus, Trash2, Sparkles, BarChart3, ArrowLeft, AlertTriangle } from 'lucide-react'
+import { Loader2, Copy, Check, Repeat, Plus, Trash2, Sparkles, BarChart3, ArrowLeft, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CampaignSelector } from '@/components/CampaignSelector'
+import { useMultipleUrlsSafety } from '@/hooks/useUrlSafety'
 
 function RotatorContent() {
     const [loading, setLoading] = useState(false)
@@ -28,6 +29,9 @@ function RotatorContent() {
         title: '',
         urls: ['', '']
     })
+
+    // URL Safety Check Hook for multiple URLs
+    const { isChecking: isCheckingUrls, hasUnsafeUrls, unsafeUrls, threats, checkUrls, reset: resetUrlCheck } = useMultipleUrlsSafety()
 
     useEffect(() => {
         const checkUser = async () => {
@@ -60,6 +64,7 @@ function RotatorContent() {
         const newUrls = [...rotatorData.urls]
         newUrls[index] = value
         setRotatorData(prev => ({ ...prev, urls: newUrls }))
+        resetUrlCheck() // Reset safety check when URLs change
     }
 
     const addRotatorUrl = () => {
@@ -113,6 +118,13 @@ function RotatorContent() {
             validUrls.forEach(url => new URL(url))
         } catch {
             alert('Please enter valid URLs')
+            setLoading(false)
+            return
+        }
+
+        // Check all URLs for safety before submitting
+        const allSafe = await checkUrls(validUrls)
+        if (!allSafe) {
             setLoading(false)
             return
         }
@@ -217,27 +229,61 @@ function RotatorContent() {
                                         <div className="space-y-3">
                                             <Label>Destination URLs</Label>
                                             {rotatorData.urls.map((url, index) => (
-                                                <div key={index} className="flex gap-2">
-                                                    <Input
-                                                        placeholder={`https://site-${index + 1}.com`}
-                                                        value={url}
-                                                        onChange={(e) => handleRotatorChange(index, e.target.value)}
-                                                        className="bg-background/50"
-                                                        required={index < 2} // Require at least 2 URLs initially
-                                                    />
-                                                    {rotatorData.urls.length > 2 && (
-                                                        <Button
-                                                            type="button"
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => removeRotatorUrl(index)}
-                                                            className="shrink-0 text-muted-foreground hover:text-destructive"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                <div key={index} className="space-y-1">
+                                                    <div className="flex gap-2">
+                                                        <div className="relative flex-1">
+                                                            <Input
+                                                                placeholder={`https://site-${index + 1}.com`}
+                                                                value={url}
+                                                                onChange={(e) => handleRotatorChange(index, e.target.value)}
+                                                                className={`bg-background/50 pr-10 ${unsafeUrls.includes(url) ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                                                                required={index < 2}
+                                                            />
+                                                            {url && !unsafeUrls.includes(url) && !isCheckingUrls && (
+                                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                                    <ShieldCheck className="h-4 w-4 text-green-500" />
+                                                                </div>
+                                                            )}
+                                                            {unsafeUrls.includes(url) && (
+                                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                                    <ShieldAlert className="h-4 w-4 text-red-500" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {rotatorData.urls.length > 2 && (
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => removeRotatorUrl(index)}
+                                                                className="shrink-0 text-muted-foreground hover:text-destructive"
+                                                            >
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                    {unsafeUrls.includes(url) && (
+                                                        <p className="text-xs text-red-500 flex items-center gap-1">
+                                                            <ShieldAlert className="h-3 w-3" />
+                                                            This URL has been flagged as dangerous
+                                                        </p>
                                                     )}
                                                 </div>
                                             ))}
+                                            {hasUnsafeUrls && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-start gap-2 text-sm text-red-600 dark:text-red-400"
+                                                >
+                                                    <ShieldAlert className="h-5 w-5 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="font-semibold">Dangerous URL(s) Detected!</p>
+                                                        <p>{unsafeUrls.length} URL(s) have been flagged as potentially harmful (malware, phishing, etc.)</p>
+                                                        <p className="mt-1 text-xs opacity-80">Please remove or replace the flagged URLs to continue.</p>
+                                                    </div>
+                                                </motion.div>
+                                            )}
                                             <Button
                                                 type="button"
                                                 variant="outline"
@@ -251,9 +297,17 @@ function RotatorContent() {
 
 
 
-                                        <Button type="submit" className="w-full h-11 text-base" disabled={loading}>
+                                        <Button type="submit" className="w-full h-11 text-base" disabled={loading || hasUnsafeUrls || isCheckingUrls}>
                                             {loading ? (
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : isCheckingUrls ? (
+                                                <span className="flex items-center">
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking URL Safety...
+                                                </span>
+                                            ) : hasUnsafeUrls ? (
+                                                <span className="flex items-center">
+                                                    <ShieldAlert className="mr-2 h-4 w-4" /> URLs Blocked
+                                                </span>
                                             ) : (
                                                 <span className="flex items-center">
                                                     {editId ? 'Update Rotator Link' : 'Create Rotator Link'} <Repeat className="ml-2 h-4 w-4" />

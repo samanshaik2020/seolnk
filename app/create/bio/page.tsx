@@ -64,14 +64,37 @@ interface BioPage {
 }
 
 const themes = [
-    { id: 'default', name: 'Default', description: 'Clean and professional' },
-    { id: 'dark', name: 'Dark', description: 'Sleek dark mode' },
-    { id: 'gradient', name: 'Gradient', description: 'Vibrant purple to orange' },
-    { id: 'glassmorphism', name: 'Glassmorphism', description: 'Modern glass effect' },
-    { id: 'neon', name: 'Neon', description: 'Cyberpunk vibes' },
-    { id: 'minimal', name: 'Minimal', description: 'Simple and clean' },
-    { id: 'sunset', name: 'Sunset', description: 'Warm orange to purple' },
-    { id: 'ocean', name: 'Ocean', description: 'Cool blue gradient' },
+    // Classic Themes
+    { id: 'default', name: 'Default', description: 'Clean and professional', category: 'Classic' },
+    { id: 'dark', name: 'Dark', description: 'Sleek dark mode', category: 'Classic' },
+    { id: 'minimal', name: 'Minimal', description: 'Simple and clean', category: 'Classic' },
+
+    // Gradient Themes
+    { id: 'gradient', name: 'Gradient', description: 'Vibrant purple to orange', category: 'Gradient' },
+    { id: 'sunset', name: 'Sunset', description: 'Warm orange to purple', category: 'Gradient' },
+    { id: 'ocean', name: 'Ocean', description: 'Cool blue gradient', category: 'Gradient' },
+    { id: 'forest', name: 'Forest', description: 'Natural green tones', category: 'Gradient' },
+    { id: 'lavender', name: 'Lavender', description: 'Soft purple dreams', category: 'Gradient' },
+    { id: 'candy', name: 'Candy', description: 'Sweet pink vibes', category: 'Gradient' },
+    { id: 'aurora', name: 'Aurora', description: 'Northern lights magic', category: 'Gradient' },
+
+    // Premium Themes
+    { id: 'glassmorphism', name: 'Glass', description: 'Modern glass effect', category: 'Premium' },
+    { id: 'neon', name: 'Neon', description: 'Cyberpunk vibes', category: 'Premium' },
+    { id: 'midnight', name: 'Midnight', description: 'Elegant dark blue', category: 'Premium' },
+    { id: 'emerald', name: 'Emerald', description: 'Luxurious green', category: 'Premium' },
+    { id: 'coral', name: 'Coral', description: 'Warm coral tones', category: 'Premium' },
+    { id: 'arctic', name: 'Arctic', description: 'Icy cool blues', category: 'Premium' },
+    { id: 'autumn', name: 'Autumn', description: 'Warm fall colors', category: 'Premium' },
+]
+
+const buttonStyles = [
+    { id: 'default', name: 'Default', description: 'Standard button' },
+    { id: 'filled', name: 'Filled', description: 'Solid background' },
+    { id: 'outline', name: 'Outline', description: 'Border only' },
+    { id: 'rounded', name: 'Pill', description: 'Fully rounded' },
+    { id: 'shadow', name: 'Shadow', description: 'Elevated with shadow' },
+    { id: 'gradient', name: 'Gradient', description: 'Gradient background' },
 ]
 
 const animations = [
@@ -79,9 +102,50 @@ const animations = [
     { id: 'pulse', name: 'Pulse' },
     { id: 'bounce', name: 'Bounce' },
     { id: 'shake', name: 'Shake' },
+    { id: 'glow', name: 'Glow' },
+    { id: 'slide', name: 'Slide In' },
+    { id: 'wiggle', name: 'Wiggle' },
+    { id: 'heartbeat', name: 'Heartbeat' },
 ]
 
-const emojiIcons = ['🔗', '🌐', '📸', '▶️', '🎵', '💼', '📧', '💬', '🛒', '📝', '🎮', '📱', '🎯', '⭐', '❤️', '🔥']
+// Organized emoji icons by category
+const emojiCategories = [
+    {
+        name: 'Social',
+        emojis: ['🔗', '🌐', '📸', '▶️', '🎵', '💼', '📧', '💬', '🐦', '📘']
+    },
+    {
+        name: 'Business',
+        emojis: ['🛒', '💰', '📊', '📈', '🏢', '💳', '🎯', '📋', '✅', '🔔']
+    },
+    {
+        name: 'Creative',
+        emojis: ['🎨', '📝', '🎬', '📷', '🎤', '🎧', '🎮', '🎪', '🎭', '🎹']
+    },
+    {
+        name: 'Popular',
+        emojis: ['⭐', '❤️', '🔥', '✨', '💎', '🌟', '💫', '🚀', '💪', '👑']
+    },
+    {
+        name: 'Food & Drink',
+        emojis: ['☕', '🍕', '🍔', '🍰', '🍷', '🥗', '🍣', '🌮', '🧁', '🍩']
+    },
+    {
+        name: 'Nature',
+        emojis: ['🌸', '🌺', '🌻', '🌙', '🌈', '☀️', '🌊', '🍀', '🌵', '🦋']
+    },
+    {
+        name: 'Tech',
+        emojis: ['📱', '💻', '🖥️', '⌨️', '🔌', '⚡', '🔧', '⚙️', '🤖', '👾']
+    },
+    {
+        name: 'Lifestyle',
+        emojis: ['🏠', '✈️', '🚗', '🚲', '💅', '💄', '👟', '👗', '🛍️', '📚']
+    },
+]
+
+// Flatten for backward compatibility
+const emojiIcons = emojiCategories.flatMap(cat => cat.emojis)
 
 function CreateBioContent() {
     const router = useRouter()
@@ -720,14 +784,14 @@ function CreateBioContent() {
 
             {/* Add/Edit Link Dialog */}
             <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>{editingLink ? 'Edit Link' : 'Add New Link'}</DialogTitle>
                         <DialogDescription>
-                            Add a link to your bio page
+                            Add a link to your Linktree page
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-5 py-4">
                         <div className="space-y-2">
                             <Label htmlFor="link_title">Title</Label>
                             <Input
@@ -746,24 +810,56 @@ function CreateBioContent() {
                                 placeholder="https://example.com"
                             />
                         </div>
-                        <div className="space-y-2">
+
+                        {/* Emoji Picker by Category */}
+                        <div className="space-y-3">
                             <Label>Icon</Label>
-                            <div className="flex flex-wrap gap-2">
-                                {emojiIcons.map((emoji) => (
-                                    <button
-                                        key={emoji}
-                                        type="button"
-                                        onClick={() => setNewLink({ ...newLink, icon: emoji })}
-                                        className={`w-10 h-10 rounded-lg border flex items-center justify-center text-xl transition-all ${newLink.icon === emoji
-                                            ? 'border-primary bg-primary/10'
-                                            : 'border-border hover:border-primary/50'
-                                            }`}
-                                    >
-                                        {emoji}
-                                    </button>
+                            <div className="space-y-3 max-h-48 overflow-y-auto pr-2 border rounded-lg p-3 bg-muted/30">
+                                {emojiCategories.map((category) => (
+                                    <div key={category.name}>
+                                        <p className="text-xs font-medium text-muted-foreground mb-2">{category.name}</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {category.emojis.map((emoji) => (
+                                                <button
+                                                    key={emoji}
+                                                    type="button"
+                                                    onClick={() => setNewLink({ ...newLink, icon: emoji })}
+                                                    className={`w-9 h-9 rounded-lg border flex items-center justify-center text-lg transition-all ${newLink.icon === emoji
+                                                        ? 'border-primary bg-primary/10 scale-110'
+                                                        : 'border-border hover:border-primary/50 hover:bg-muted'
+                                                        }`}
+                                                >
+                                                    {emoji}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
+
+                        {/* Button Style */}
+                        <div className="space-y-2">
+                            <Label>Button Style</Label>
+                            <Select
+                                value={newLink.button_style}
+                                onValueChange={(value) => setNewLink({ ...newLink, button_style: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {buttonStyles.map((style) => (
+                                        <SelectItem key={style.id} value={style.id}>
+                                            <span className="font-medium">{style.name}</span>
+                                            <span className="text-muted-foreground ml-2 text-xs">- {style.description}</span>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Animation */}
                         <div className="space-y-2">
                             <Label>Animation</Label>
                             <Select
@@ -799,14 +895,28 @@ function CreateBioContent() {
 
 function getThemePreviewClass(themeId: string): string {
     const classes: Record<string, string> = {
+        // Classic
         default: 'bg-gradient-to-br from-slate-100 to-slate-200',
         dark: 'bg-gradient-to-br from-zinc-800 to-black',
-        gradient: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
-        glassmorphism: 'bg-gradient-to-br from-slate-700 via-purple-800 to-slate-700',
-        neon: 'bg-black border border-cyan-500/50',
         minimal: 'bg-white border border-black',
+
+        // Gradient
+        gradient: 'bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400',
         sunset: 'bg-gradient-to-br from-orange-400 via-rose-500 to-purple-600',
         ocean: 'bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700',
+        forest: 'bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600',
+        lavender: 'bg-gradient-to-br from-purple-300 via-violet-400 to-purple-500',
+        candy: 'bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500',
+        aurora: 'bg-gradient-to-br from-green-400 via-cyan-500 to-purple-600',
+
+        // Premium
+        glassmorphism: 'bg-gradient-to-br from-slate-700 via-purple-800 to-slate-700',
+        neon: 'bg-black border border-cyan-500/50',
+        midnight: 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900',
+        emerald: 'bg-gradient-to-br from-emerald-600 via-green-700 to-emerald-800',
+        coral: 'bg-gradient-to-br from-orange-300 via-rose-400 to-pink-400',
+        arctic: 'bg-gradient-to-br from-cyan-100 via-blue-200 to-indigo-300',
+        autumn: 'bg-gradient-to-br from-amber-400 via-orange-500 to-red-600',
     }
     return classes[themeId] || classes.default
 }

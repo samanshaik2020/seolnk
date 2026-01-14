@@ -287,37 +287,59 @@ function DashboardContent() {
                     transition-transform duration-200 ease-in-out
                 `}>
                     <div className="p-4">
-                        <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
-                            Link Tools
-                        </h2>
-                        <nav className="space-y-1">
-                            {sidebarItems.map((item) => {
-                                const isActive = tab === item.value
+                        {/* Linktree Section - TOP OF SIDEBAR */}
+                        <div className="mb-6">
+                            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
+                                Link-in-Bio
+                            </h2>
+                            <Link
+                                href="/bio-links"
+                                onClick={() => setSidebarOpen(false)}
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-foreground hover:text-primary hover:bg-muted"
+                            >
+                                <User className="h-4 w-4" />
+                                <div className="flex-1">
+                                    <div className="font-semibold">Linktree</div>
+                                    <div className="text-xs text-foreground/70">
+                                        Your link-in-bio pages
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
 
-                                return (
-                                    <Link
-                                        key={item.value}
-                                        href={`/dashboard?tab=${item.value}`}
-                                        onClick={() => setSidebarOpen(false)}
-                                        className={`
+                        <div className="border-t pt-6">
+                            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
+                                Link Tools
+                            </h2>
+                            <nav className="space-y-1">
+                                {sidebarItems.map((item) => {
+                                    const isActive = tab === item.value
+
+                                    return (
+                                        <Link
+                                            key={item.value}
+                                            href={`/dashboard?tab=${item.value}`}
+                                            onClick={() => setSidebarOpen(false)}
+                                            className={`
                                             flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                                             ${isActive
-                                                ? "bg-primary/10 text-primary font-semibold"
-                                                : "text-foreground hover:text-primary hover:bg-muted"
-                                            }
+                                                    ? "bg-primary/10 text-primary font-semibold"
+                                                    : "text-foreground hover:text-primary hover:bg-muted"
+                                                }
                                         `}
-                                    >
-                                        <item.icon className="h-4 w-4" />
-                                        <div className="flex-1">
-                                            <div className="font-semibold">{item.title}</div>
-                                            <div className="text-xs text-foreground/70">
-                                                {item.description}
+                                        >
+                                            <item.icon className="h-4 w-4" />
+                                            <div className="flex-1">
+                                                <div className="font-semibold">{item.title}</div>
+                                                <div className="text-xs text-foreground/70">
+                                                    {item.description}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </Link>
-                                )
-                            })}
-                        </nav>
+                                        </Link>
+                                    )
+                                })}
+                            </nav>
+                        </div>
 
                         {/* Campaigns Section */}
                         <div className="mt-6 pt-6 border-t">
@@ -334,26 +356,6 @@ function DashboardContent() {
                                     <div className="font-semibold">Campaigns</div>
                                     <div className="text-xs text-foreground/70">
                                         Organize links into folders
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-
-                        {/* Bio Links Section */}
-                        <div className="mt-6 pt-6 border-t">
-                            <h2 className="text-xs font-bold text-foreground/60 uppercase tracking-wider mb-4 px-3">
-                                Link-in-Bio
-                            </h2>
-                            <Link
-                                href="/bio-links"
-                                onClick={() => setSidebarOpen(false)}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-foreground hover:text-primary hover:bg-muted"
-                            >
-                                <User className="h-4 w-4" />
-                                <div className="flex-1">
-                                    <div className="font-semibold">Bio Links</div>
-                                    <div className="text-xs text-foreground/70">
-                                        Your link-in-bio pages
                                     </div>
                                 </div>
                             </Link>

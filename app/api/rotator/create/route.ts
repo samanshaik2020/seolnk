@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { nanoid } from 'nanoid'
+import { checkMultipleUrlsSafety, getThreatDescription } from '@/lib/safe-browsing'
 
 export async function POST(request: Request) {
     try {
@@ -12,6 +13,18 @@ export async function POST(request: Request) {
                 { error: 'At least one URL is required' },
                 { status: 400 }
             )
+        }
+
+        // Check all URLs for safety before proceeding
+        const safetyCheck = await checkMultipleUrlsSafety(urls)
+        if (!safetyCheck.allSafe) {
+            const firstThreat = safetyCheck.threats[0]
+            return NextResponse.json({
+                error: 'Unsafe URL(s) detected',
+                message: getThreatDescription(firstThreat?.threatType || 'UNKNOWN'),
+                unsafeUrls: safetyCheck.unsafeUrls,
+                threats: safetyCheck.threats
+            }, { status: 400 })
         }
 
         const slug = nanoid(6)
@@ -82,6 +95,18 @@ export async function PUT(request: Request) {
                 { error: 'At least one URL is required' },
                 { status: 400 }
             )
+        }
+
+        // Check all URLs for safety before proceeding
+        const safetyCheck = await checkMultipleUrlsSafety(urls)
+        if (!safetyCheck.allSafe) {
+            const firstThreat = safetyCheck.threats[0]
+            return NextResponse.json({
+                error: 'Unsafe URL(s) detected',
+                message: getThreatDescription(firstThreat?.threatType || 'UNKNOWN'),
+                unsafeUrls: safetyCheck.unsafeUrls,
+                threats: safetyCheck.threats
+            }, { status: 400 })
         }
 
         // 1. Update the rotator entry

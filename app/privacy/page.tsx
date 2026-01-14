@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Shield, Lock, Eye, Database, UserCheck } from 'lucide-react';
+import { ArrowLeft, Shield, Lock, Eye, Database, UserCheck, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default function PrivacyPolicyPage() {
                         </h1>
 
                         <p className="text-lg sm:text-xl text-white/90 mb-4 max-w-2xl mx-auto">
-                            Last Updated: January 13, 2026
+                            Last Updated: January 14, 2026
                         </p>
                     </div>
                 </div>
@@ -149,9 +149,49 @@ export default function PrivacyPolicyPage() {
                             </p>
                         </section>
 
+                        {/* URL Safety Checking */}
+                        <section className="mb-12">
+                            <div className="flex items-center gap-3 mb-4">
+                                <ShieldCheck className="h-6 w-6 text-green-600" />
+                                <h2 className="text-2xl font-bold m-0">5. URL Safety Checking (Google Safe Browsing)</h2>
+                            </div>
+
+                            <p>To protect our users and maintain platform integrity, SEOLnk uses the <strong>Google Safe Browsing API</strong> to check URLs for potential threats before allowing them to be shortened or shared.</p>
+
+                            <h3 className="text-xl font-semibold mt-6 mb-3">What We Check</h3>
+                            <p>When you submit a URL to create a link, we send that URL to Google's Safe Browsing service to check for:</p>
+                            <ul className="space-y-2">
+                                <li><strong>Malware:</strong> Sites that may install malicious software on visitors' devices</li>
+                                <li><strong>Social Engineering:</strong> Phishing sites designed to steal personal information</li>
+                                <li><strong>Unwanted Software:</strong> Sites that may attempt to install unwanted programs</li>
+                                <li><strong>Potentially Harmful Applications:</strong> Sites hosting dangerous applications</li>
+                            </ul>
+
+                            <h3 className="text-xl font-semibold mt-6 mb-3">Data Shared with Google</h3>
+                            <ul className="space-y-2">
+                                <li>Only the URL you submit is sent to Google's Safe Browsing API for checking</li>
+                                <li>We do not share your personal information, account details, or any other data with this service</li>
+                                <li>Google processes this data according to their <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Privacy Policy</a></li>
+                            </ul>
+
+                            <h3 className="text-xl font-semibold mt-6 mb-3">Why We Use This Service</h3>
+                            <ul className="space-y-2">
+                                <li>To protect end-users who click on links created through our platform</li>
+                                <li>To prevent the spread of malicious content through our service</li>
+                                <li>To maintain the reputation and trustworthiness of SEOLnk links</li>
+                                <li>To comply with industry best practices for link safety</li>
+                            </ul>
+
+                            <div className="mt-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                <p className="text-sm text-green-700 dark:text-green-400">
+                                    <strong>Your Benefit:</strong> This protection helps ensure that links you create and share are safe, protecting both you and your audience from potential security threats.
+                                </p>
+                            </div>
+                        </section>
+
                         {/* Your Rights */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">5. Your Rights and Choices</h2>
+                            <h2 className="text-2xl font-bold mb-4">6. Your Rights and Choices</h2>
 
                             <p>You have the right to:</p>
                             <ul className="space-y-2">
@@ -166,7 +206,7 @@ export default function PrivacyPolicyPage() {
 
                         {/* Cookies */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">6. Cookies and Tracking Technologies</h2>
+                            <h2 className="text-2xl font-bold mb-4">7. Cookies and Tracking Technologies</h2>
 
                             <p>We use cookies and similar technologies to:</p>
                             <ul className="space-y-2">
@@ -182,7 +222,7 @@ export default function PrivacyPolicyPage() {
 
                         {/* Data Retention */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">7. Data Retention</h2>
+                            <h2 className="text-2xl font-bold mb-4">8. Data Retention</h2>
 
                             <p>
                                 We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy,
@@ -193,7 +233,7 @@ export default function PrivacyPolicyPage() {
 
                         {/* Children's Privacy */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">8. Children's Privacy</h2>
+                            <h2 className="text-2xl font-bold mb-4">9. Children's Privacy</h2>
 
                             <p>
                                 Our services are not intended for children under 13 years of age. We do not knowingly collect personal
@@ -204,7 +244,7 @@ export default function PrivacyPolicyPage() {
 
                         {/* Changes to Policy */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">9. Changes to This Privacy Policy</h2>
+                            <h2 className="text-2xl font-bold mb-4">10. Changes to This Privacy Policy</h2>
 
                             <p>
                                 We may update this Privacy Policy from time to time. We will notify you of any significant changes by
@@ -215,7 +255,7 @@ export default function PrivacyPolicyPage() {
 
                         {/* Contact */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">10. Contact Us</h2>
+                            <h2 className="text-2xl font-bold mb-4">11. Contact Us</h2>
 
                             <p>
                                 If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices,
