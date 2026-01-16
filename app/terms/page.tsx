@@ -70,6 +70,12 @@ export default function TermsPage() {
                                 and services. By accessing or using SEOLnk, you agree to be bound by these Terms. If you do not agree,
                                 please do not use our services.
                             </p>
+                            <div className="mt-6 p-5 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                                <p className="text-sm font-semibold text-purple-700 dark:text-purple-400 mb-2">📧 Need Help or Have Questions?</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Contact our Support Team at <a href="mailto:support@seolnk.com" className="text-purple-600 hover:underline font-medium">support@seolnk.com</a>
+                                </p>
+                            </div>
                         </section>
 
                         {/* Acceptance of Terms */}
@@ -333,9 +339,9 @@ export default function TermsPage() {
                             <h2 className="text-2xl font-bold mb-4">12. Governing Law and Disputes</h2>
 
                             <p>
-                                These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction],
+                                These Terms shall be governed by and construed in accordance with the laws of <strong>India</strong>,
                                 without regard to its conflict of law provisions. Any disputes arising from these Terms or your use
-                                of SEOLnk shall be resolved through binding arbitration or in the courts of [Your Jurisdiction].
+                                of SEOLnk shall be resolved through binding arbitration or in the courts located in India.
                             </p>
                         </section>
 
@@ -368,8 +374,9 @@ export default function TermsPage() {
                                 If you have any questions or concerns about these Terms, please contact us:
                             </p>
                             <div className="mt-4 p-6 rounded-lg bg-muted/50 border">
-                                <p className="font-semibold mb-2">SEOLnk Legal Team</p>
-                                <p>Email: <a href="mailto:legal@seolnk.com" className="text-purple-600 hover:underline">legal@seolnk.com</a></p>
+                                <p className="font-semibold mb-2">SEOLnk Legal & Support Team</p>
+                                <p>Email: <a href="mailto:support@seolnk.com" className="text-purple-600 hover:underline">support@seolnk.com</a></p>
+                                <p className="mt-1 text-sm text-muted-foreground">For legal inquiries: <a href="mailto:legal@seolnk.com" className="text-purple-600 hover:underline">legal@seolnk.com</a></p>
                                 <p className="mt-2">
                                     <Link href="/contact" className="text-purple-600 hover:underline">Visit our Contact Page</Link>
                                 </p>

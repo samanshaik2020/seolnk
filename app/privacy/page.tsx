@@ -69,6 +69,12 @@ export default function PrivacyPolicyPage() {
                                 At SEOLnk, we are committed to protecting your privacy and ensuring the security of your personal information.
                                 This Privacy Policy explains how we collect, use, disclose, and safeguard your data when you use our link management platform.
                             </p>
+                            <div className="mt-6 p-5 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                <p className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-2">📧 Questions or Concerns?</p>
+                                <p className="text-sm text-muted-foreground">
+                                    Contact our Privacy Team at <a href="mailto:support@seolnk.com" className="text-blue-600 hover:underline font-medium">support@seolnk.com</a>
+                                </p>
+                            </div>
                         </section>
 
                         {/* Information We Collect */}
@@ -208,27 +214,52 @@ export default function PrivacyPolicyPage() {
                         <section className="mb-12">
                             <h2 className="text-2xl font-bold mb-4">7. Cookies and Tracking Technologies</h2>
 
-                            <p>We use cookies and similar technologies to:</p>
-                            <ul className="space-y-2">
-                                <li>Maintain your login session</li>
-                                <li>Remember your preferences</li>
-                                <li>Analyze usage patterns</li>
-                                <li>Improve our services</li>
+                            <p>We use essential cookies for authentication and analytics to improve your experience on SEOLnk.</p>
+
+                            <h3 className="text-xl font-semibold mt-6 mb-3">Types of Cookies We Use</h3>
+                            <ul className="space-y-3">
+                                <li>
+                                    <strong>Essential Cookies:</strong> Required for authentication, security, and core platform functionality. These cookies are necessary for the service to work properly.
+                                </li>
+                                <li>
+                                    <strong>Analytics Cookies:</strong> Help us understand how users interact with our platform so we can improve performance and user experience.
+                                </li>
+                                <li>
+                                    <strong>Preference Cookies:</strong> Remember your settings and preferences (e.g., theme, language) to personalize your experience.
+                                </li>
                             </ul>
-                            <p className="mt-4">
-                                You can control cookies through your browser settings, but disabling them may affect functionality.
-                            </p>
+
+                            <div className="mt-4 p-4 bg-muted/50 border rounded-lg">
+                                <p className="text-sm">
+                                    <strong>Cookie Control:</strong> You can control cookies through your browser settings. Please note that disabling essential cookies may affect the functionality of our platform.
+                                </p>
+                            </div>
                         </section>
 
                         {/* Data Retention */}
                         <section className="mb-12">
                             <h2 className="text-2xl font-bold mb-4">8. Data Retention</h2>
 
-                            <p>
+                            <p className="mb-4">
                                 We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy,
-                                unless a longer retention period is required by law. When you delete your account, we will permanently delete
-                                or anonymize your personal information within 30 days.
+                                unless a longer retention period is required by law.
                             </p>
+
+                            <h3 className="text-xl font-semibold mt-6 mb-3">Retention Periods</h3>
+                            <ul className="space-y-2">
+                                <li>
+                                    <strong>Active Accounts:</strong> We retain user data as long as your account remains active or as needed to provide you services.
+                                </li>
+                                <li>
+                                    <strong>Deleted Accounts:</strong> When you delete your account, we will permanently delete or anonymize your personal information within 30 days.
+                                </li>
+                                <li>
+                                    <strong>Analytics Data:</strong> Aggregated and anonymized analytics data may be retained for statistical purposes.
+                                </li>
+                                <li>
+                                    <strong>Legal Requirements:</strong> Some data may be retained longer if required by law, regulation, or for legitimate business purposes (e.g., fraud prevention, financial records).
+                                </li>
+                            </ul>
                         </section>
 
                         {/* Children's Privacy */}
@@ -253,17 +284,29 @@ export default function PrivacyPolicyPage() {
                             </p>
                         </section>
 
+                        {/* Jurisdiction */}
+                        <section className="mb-12">
+                            <h2 className="text-2xl font-bold mb-4">11. Jurisdiction and Governing Law</h2>
+
+                            <p>
+                                This Privacy Policy and any disputes relating to it are governed by the laws of <strong>India</strong>,
+                                without regard to its conflict of law provisions. By using SEOLnk, you consent to the jurisdiction
+                                of the courts in India for any disputes arising from this Privacy Policy or your use of our services.
+                            </p>
+                        </section>
+
                         {/* Contact */}
                         <section className="mb-12">
-                            <h2 className="text-2xl font-bold mb-4">11. Contact Us</h2>
+                            <h2 className="text-2xl font-bold mb-4">12. Contact Us</h2>
 
                             <p>
                                 If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices,
                                 please contact us:
                             </p>
                             <div className="mt-4 p-6 rounded-lg bg-muted/50 border">
-                                <p className="font-semibold mb-2">SEOLnk Privacy Team</p>
-                                <p>Email: <a href="mailto:privacy@seolnk.com" className="text-blue-600 hover:underline">privacy@seolnk.com</a></p>
+                                <p className="font-semibold mb-2">SEOLnk Privacy & Support Team</p>
+                                <p>Email: <a href="mailto:support@seolnk.com" className="text-blue-600 hover:underline">support@seolnk.com</a></p>
+                                <p className="mt-1 text-sm text-muted-foreground">For privacy-specific inquiries: <a href="mailto:privacy@seolnk.com" className="text-blue-600 hover:underline">privacy@seolnk.com</a></p>
                                 <p className="mt-2">
                                     <Link href="/contact" className="text-blue-600 hover:underline">Visit our Contact Page</Link>
                                 </p>
