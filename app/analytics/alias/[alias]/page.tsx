@@ -1,39 +1,75 @@
+'use client'
+
+import { useEffect, useState, use } from 'react'
 import { supabase } from '@/lib/supabase'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { ArrowLeft, Globe, Smartphone, MousePointer2, Zap, TrendingUp, Calendar } from 'lucide-react'
+import {
+    ArrowLeft, Globe, MousePointer2, Zap, TrendingUp,
+    Calendar, ExternalLink, Loader2, Activity, CheckCircle, Lock
+} from 'lucide-react'
+import { AnalyticsLineChart } from '@/components/analytics/AnalyticsLineChart'
+import { StatsCard } from '@/components/analytics/StatsCard'
+import { DeviceBreakdownSimple } from '@/components/analytics/DeviceBreakdown'
 
-type Props = {
-    params: Promise<{ alias: string }>
+interface AnalyticsEntry {
+    id: string
+    clicked_at: string
+    referrer: string
+    user_agent: string
 }
 
-export const dynamic = 'force-dynamic'
-
-async function getAliasAnalytics(alias: string) {
-    // 1. Get Alias
-    const { data: aliasData } = await supabase
-        .from('custom_aliases')
-        .select('*')
-        .eq('alias', alias)
-        .single()
-
-    if (!aliasData) return null
-
-    // 2. Get Analytics
-    const { data: analytics } = await supabase
-        .from('custom_alias_analytics')
-        .select('*')
-        .eq('alias_id', aliasData.id)
-
-    return { alias: aliasData, analytics: analytics || [] }
+interface AliasData {
+    id: string
+    alias: string
+    title: string
+    destination_url: string
+    click_count: number
+    is_active: boolean
+    is_locked: boolean
+    created_at: string
+    expires_at: string | null
 }
 
-export default async function AliasAnalyticsPage({ params }: Props) {
-    const { alias } = await params
-    const data = await getAliasAnalytics(alias)
+export default function AliasAnalyticsPage({ params }: { params: Promise<{ alias: string }> }) {
+    const { alias } = use(params)
+    const [loading, setLoading] = useState(true)
+    const [aliasData, setAliasData] = useState<AliasData | null>(null)
+    const [analytics, setAnalytics] = useState<AnalyticsEntry[]>([])
 
-    if (!data) {
+    useEffect(() => {
+        async function fetchData() {
+            const { data: aliasResult } = await supabase
+                .from('custom_aliases')
+                .select('*')
+                .eq('alias', alias)
+                .single()
+
+            if (aliasResult) {
+                setAliasData(aliasResult)
+                const { data: analyticsData } = await supabase
+                    .from('custom_alias_analytics')
+                    .select('*')
+                    .eq('alias_id', aliasResult.id)
+                    .order('clicked_at', { ascending: false })
+
+                setAnalytics(analyticsData || [])
+            }
+            setLoading(false)
+        }
+        fetchData()
+    }, [alias])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
+    }
+
+    if (!aliasData) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-background">
                 <div className="text-center">
@@ -46,23 +82,20 @@ export default async function AliasAnalyticsPage({ params }: Props) {
         )
     }
 
-    const { alias: aliasData, analytics } = data
-
     // Aggregations
     const totalClicks = aliasData.click_count || analytics.length
 
+    // Generate chart data (last 14 days)
+    const chartData = generateChartData(analytics, 14)
+
     // Device Breakdown
-    const deviceCounts: Record<string, number> = {}
+    const deviceCounts = { mobile: 0, desktop: 0, tablet: 0 }
     analytics.forEach(a => {
         const ua = a.user_agent?.toLowerCase() || ''
-        let device = 'Desktop'
-        if (ua.includes('mobile')) device = 'Mobile'
-        else if (ua.includes('tablet') || ua.includes('ipad')) device = 'Tablet'
-
-        deviceCounts[device] = (deviceCounts[device] || 0) + 1
+        if (ua.includes('mobile')) deviceCounts.mobile++
+        else if (ua.includes('tablet') || ua.includes('ipad')) deviceCounts.tablet++
+        else deviceCounts.desktop++
     })
-    const topDevices = Object.entries(deviceCounts)
-        .sort(([, a], [, b]) => b - a)
 
     // Top Referrers
     const referrerCounts: Record<string, number> = {}
@@ -79,36 +112,21 @@ export default async function AliasAnalyticsPage({ params }: Props) {
         .sort(([, a], [, b]) => b - a)
         .slice(0, 5)
 
-    // Recent clicks (last 10)
-    const recentClicks = analytics
-        .sort((a, b) => new Date(b.clicked_at).getTime() - new Date(a.clicked_at).getTime())
-        .slice(0, 10)
+    // Recent clicks
+    const recentClicks = analytics.slice(0, 10)
 
-    // Clicks by day (last 7 days)
-    const last7Days: Record<string, number> = {}
-    const now = new Date()
-    for (let i = 6; i >= 0; i--) {
-        const date = new Date(now)
-        date.setDate(date.getDate() - i)
-        const key = date.toLocaleDateString('en-US', { weekday: 'short' })
-        last7Days[key] = 0
-    }
-    analytics.forEach(a => {
+    // Calculate trends
+    const last7Days = analytics.filter(a => {
         const date = new Date(a.clicked_at)
-        const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-        if (diffDays < 7) {
-            const key = date.toLocaleDateString('en-US', { weekday: 'short' })
-            if (key in last7Days) {
-                last7Days[key]++
-            }
-        }
-    })
+        const diffDays = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
+        return diffDays < 7
+    }).length
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-6xl mx-auto space-y-8">
-                {/* Header */}
-                <div className="flex items-center justify-between">
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-yellow-500/5">
+            {/* Header */}
+            <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
+                <div className="container mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button variant="ghost" size="icon" asChild>
                             <Link href="/dashboard?tab=aliases">
@@ -116,169 +134,218 @@ export default async function AliasAnalyticsPage({ params }: Props) {
                             </Link>
                         </Button>
                         <div>
-                            <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
-                            <p className="text-muted-foreground flex items-center gap-2">
-                                <Zap className="h-4 w-4" /> /{aliasData.alias}
-                                {aliasData.title && <span className="text-sm">• {aliasData.title}</span>}
+                            <h1 className="text-xl font-bold tracking-tight">Alias Analytics</h1>
+                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                <Zap className="h-3 w-3" /> /{aliasData.alias}
+                                {aliasData.title && <span>• {aliasData.title}</span>}
                             </p>
                         </div>
                     </div>
-                    <Button asChild variant="outline">
+                    <Button asChild variant="outline" className="gap-2">
                         <Link href={`/a/${alias}`} target="_blank">
+                            <ExternalLink className="h-4 w-4" />
                             Visit Link
                         </Link>
                     </Button>
                 </div>
+            </header>
 
-                {/* Stats Cards */}
-                <div className="grid sm:grid-cols-3 gap-6">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-                            <MousePointer2 className="h-4 w-4 text-muted-foreground" />
+            <main className="container mx-auto px-4 py-8">
+                <div className="max-w-7xl mx-auto space-y-8">
+                    {/* Stats Cards */}
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <StatsCard
+                            title="Total Clicks"
+                            value={totalClicks}
+                            icon={MousePointer2}
+                            subtitle="All time clicks"
+                            trend={last7Days > 0 ? { value: last7Days, label: 'this week', positive: true } : undefined}
+                        />
+                        <StatsCard
+                            title="This Week"
+                            value={last7Days}
+                            icon={TrendingUp}
+                            subtitle="Last 7 days"
+                        />
+                        <StatsCard
+                            title="Status"
+                            value={aliasData.is_active ? 'Active' : 'Inactive'}
+                            icon={aliasData.is_active ? CheckCircle : Lock}
+                            subtitle={aliasData.is_locked ? '🔒 Locked' : '🔓 Editable'}
+                            iconColor={aliasData.is_active ? 'text-green-500' : 'text-destructive'}
+                        />
+                        <StatsCard
+                            title="Created"
+                            value={new Date(aliasData.created_at).toLocaleDateString()}
+                            icon={Calendar}
+                            subtitle={aliasData.expires_at ? `Expires: ${new Date(aliasData.expires_at).toLocaleDateString()}` : 'No expiration'}
+                        />
+                    </div>
+
+                    {/* Line Chart */}
+                    <Card className="overflow-hidden">
+                        <CardHeader className="border-b bg-muted/30">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <TrendingUp className="h-5 w-5 text-yellow-500" />
+                                        Clicks Over Time
+                                    </CardTitle>
+                                    <CardDescription>Last 14 days performance</CardDescription>
+                                </div>
+                            </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-4xl font-bold">{totalClicks}</div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                                All time clicks
-                            </p>
+                        <CardContent className="pt-6">
+                            <AnalyticsLineChart
+                                data={chartData}
+                                height={300}
+                                gradientColor="#eab308"
+                            />
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Status</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {aliasData.is_active ? (
-                                    <span className="text-green-600">Active</span>
+                    <div className="grid lg:grid-cols-2 gap-6">
+                        {/* Device Breakdown */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Activity className="h-5 w-5 text-yellow-500" />
+                                    Device Breakdown
+                                </CardTitle>
+                                <CardDescription>Where your visitors come from</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <DeviceBreakdownSimple
+                                    mobile={deviceCounts.mobile}
+                                    desktop={deviceCounts.desktop}
+                                    tablet={deviceCounts.tablet}
+                                />
+                            </CardContent>
+                        </Card>
+
+                        {/* Top Referrers */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Globe className="h-5 w-5 text-yellow-500" />
+                                    Top Referrers
+                                </CardTitle>
+                                <CardDescription>Traffic sources</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {topReferrers.length === 0 ? (
+                                    <p className="text-center text-muted-foreground py-8">No referrer data yet</p>
                                 ) : (
-                                    <span className="text-destructive">Inactive</span>
+                                    <div className="space-y-3">
+                                        {topReferrers.map(([ref, count], i) => {
+                                            const maxCount = topReferrers[0][1]
+                                            const percentage = (count / Math.max(totalClicks, 1)) * 100
+                                            return (
+                                                <div key={i} className="space-y-1">
+                                                    <div className="flex items-center justify-between text-sm">
+                                                        <span className="font-medium truncate max-w-[60%]">{ref}</span>
+                                                        <span className="text-muted-foreground">
+                                                            {count} ({percentage.toFixed(1)}%)
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                                        <div
+                                                            className="h-full bg-yellow-500/60 rounded-full transition-all duration-500"
+                                                            style={{ width: `${(count / maxCount) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
                                 )}
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                                {aliasData.is_locked ? '🔒 Locked' : '🔓 Editable'}
-                            </p>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
+                    </div>
 
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Created</CardTitle>
-                            <Calendar className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-xl font-bold">
-                                {new Date(aliasData.created_at).toLocaleDateString()}
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                                {aliasData.expires_at ? `Expires: ${new Date(aliasData.expires_at).toLocaleDateString()}` : 'No expiration'}
-                            </p>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Click Trend */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5" />
-                            Last 7 Days
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex items-end justify-between h-32 gap-2">
-                            {Object.entries(last7Days).map(([day, count], i) => (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                                    <div
-                                        className="w-full bg-primary/20 rounded-t transition-all"
-                                        style={{
-                                            height: `${Math.max(4, (count / Math.max(...Object.values(last7Days), 1)) * 100)}%`
-                                        }}
-                                    />
-                                    <span className="text-xs text-muted-foreground">{day}</span>
-                                    <span className="text-xs font-medium">{count}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                    {/* Device Breakdown */}
+                    {/* Recent Clicks */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Smartphone className="h-5 w-5" />
-                                Device Breakdown
+                                <MousePointer2 className="h-5 w-5 text-yellow-500" />
+                                Recent Clicks
                             </CardTitle>
+                            <CardDescription>Latest visitors to your link</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
-                                {topDevices.map(([device, count], i) => (
-                                    <div key={i} className="flex items-center justify-between">
-                                        <div className="text-sm">{device}</div>
-                                        <div className="font-bold">{count}</div>
-                                    </div>
-                                ))}
-                                {topDevices.length === 0 && <p className="text-sm text-muted-foreground">No data yet</p>}
-                            </div>
-                        </CardContent>
-                    </Card>
+                            {recentClicks.length === 0 ? (
+                                <p className="text-center text-muted-foreground py-8">
+                                    No clicks yet. Share your link to start tracking!
+                                </p>
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b">
+                                                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Time</th>
+                                                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Referrer</th>
+                                                <th className="text-left py-3 px-4 font-medium text-muted-foreground">Device</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y">
+                                            {recentClicks.map((entry) => {
+                                                const ua = entry.user_agent?.toLowerCase() || ''
+                                                let device = 'Desktop'
+                                                if (ua.includes('mobile')) device = 'Mobile'
+                                                else if (ua.includes('tablet') || ua.includes('ipad')) device = 'Tablet'
 
-                    {/* Top Referrers */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Globe className="h-5 w-5" />
-                                Top Referrers
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {topReferrers.map(([ref, count], i) => (
-                                    <div key={i} className="flex items-center justify-between">
-                                        <div className="truncate max-w-[70%] text-sm" title={ref}>
-                                            {ref}
-                                        </div>
-                                        <div className="font-bold">{count}</div>
-                                    </div>
-                                ))}
-                                {topReferrers.length === 0 && <p className="text-sm text-muted-foreground">No data yet</p>}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Recent Clicks */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <MousePointer2 className="h-5 w-5" />
-                            Recent Clicks
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {recentClicks.map((click, i) => (
-                                <div key={i} className="flex items-center justify-between text-sm py-2 border-b last:border-0">
-                                    <span className="text-muted-foreground">
-                                        {new Date(click.clicked_at).toLocaleString()}
-                                    </span>
-                                    <div className="text-muted-foreground truncate max-w-[40%]">
-                                        {click.referrer || 'Direct'}
-                                    </div>
+                                                return (
+                                                    <tr key={entry.id} className="hover:bg-muted/50 transition-colors">
+                                                        <td className="py-3 px-4">
+                                                            {new Date(entry.clicked_at).toLocaleString()}
+                                                        </td>
+                                                        <td className="py-3 px-4 text-muted-foreground truncate max-w-[200px]">
+                                                            {entry.referrer || 'Direct'}
+                                                        </td>
+                                                        <td className="py-3 px-4">
+                                                            <span className={`px-2 py-1 rounded-full text-xs ${device === 'Mobile' ? 'bg-blue-500/10 text-blue-500' :
+                                                                    device === 'Tablet' ? 'bg-purple-500/10 text-purple-500' :
+                                                                        'bg-green-500/10 text-green-500'
+                                                                }`}>
+                                                                {device}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            ))}
-                            {recentClicks.length === 0 && (
-                                <p className="text-sm text-muted-foreground text-center py-4">No clicks yet</p>
                             )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </main>
         </div>
     )
+}
+
+// Helper function to generate chart data
+function generateChartData(analytics: AnalyticsEntry[], days: number) {
+    const data: { date: string; views: number; label: string }[] = []
+    const now = new Date()
+
+    for (let i = days - 1; i >= 0; i--) {
+        const date = new Date(now)
+        date.setDate(date.getDate() - i)
+        const dateStr = date.toISOString().split('T')[0]
+
+        const views = analytics.filter(a => {
+            const aDate = new Date(a.clicked_at).toISOString().split('T')[0]
+            return aDate === dateStr
+        }).length
+
+        data.push({
+            date: dateStr,
+            views,
+            label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        })
+    }
+
+    return data
 }

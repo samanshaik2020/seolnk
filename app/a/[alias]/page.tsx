@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { AlertCircle, Clock } from 'lucide-react'
 import Link from 'next/link'
 
@@ -114,8 +115,14 @@ export default async function AliasRedirectPage({
 
     // Log analytics
     try {
+        const headersList = await headers()
+        const userAgent = headersList.get('user-agent') || null
+        const referrer = headersList.get('referer') || null
+
         await supabase.from('custom_alias_analytics').insert({
             alias_id: aliasData.id,
+            user_agent: userAgent,
+            referrer: referrer,
         })
 
         // Increment click count
