@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion, Variants } from 'framer-motion';
 import { Eye, Link2, Repeat, Clock, Lock, User, BarChart3, Shield, Globe, Zap, CheckCircle2, ArrowRight, Sparkles, Play, Star, TrendingUp, Users, MousePointerClick, ChevronRight } from 'lucide-react';
 
@@ -402,7 +403,7 @@ export function LandingHero() {
                                 className="group relative"
                             >
                                 <div className="relative h-full p-6 sm:p-8 rounded-2xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2">
-                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500`}></div>
+                                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${tool.color} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500 pointer-events-none`}></div>
 
                                     <div className={`relative w-14 h-14 rounded-xl ${tool.bgColor} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                                         <tool.icon className={`h-7 w-7 ${tool.textColor}`} />
@@ -421,18 +422,18 @@ export function LandingHero() {
                                     </div>
 
                                     <div className="flex gap-3">
-                                        <a
+                                        <Link
                                             href={`/login?next=/create/${tool.slug}`}
                                             className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 group/btn"
                                         >
                                             Create <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                                        </a>
-                                        <a
+                                        </Link>
+                                        <Link
                                             href={tool.blogLink}
                                             className="px-4 py-2.5 border border-border rounded-lg font-medium text-sm hover:bg-muted transition-colors"
                                         >
                                             Learn
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </motion.div>
